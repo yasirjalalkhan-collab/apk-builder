@@ -1,0 +1,3036 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>StitchHub – Smart Tailor Management</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+/* ═══════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════ */
+:root{
+  --primary:#4A6741;
+  --primary-dark:#354d2f;
+  --primary-light:#eef3ed;
+  --primary-mid:#6a8f60;
+  --accent:#c8a96e;
+  --accent-light:#f5edd8;
+  --success:#27AE60;
+  --warning:#E67E22;
+  --danger:#C0392B;
+  --info:#2980B9;
+  --bg:#f0f4ef;
+  --card:#FFFFFF;
+  --border:#dde8db;
+  --text:#1c2b1a;
+  --text-light:#6b8068;
+  --text-muted:#9ab098;
+  --sidebar-w:260px;
+  --header-h:58px;
+  --radius:14px;
+  --radius-sm:8px;
+  --shadow:0 2px 16px rgba(74,103,65,.10);
+  --shadow-lg:0 8px 40px rgba(74,103,65,.18);
+  --transition:.22s cubic-bezier(.4,0,.2,1);
+  --font-en:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  --font-ur:'Noto Nastaliq Urdu','Noto Naskh Arabic','Segoe UI',sans-serif;
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;height:100%;}
+body{
+  font-family:var(--font-en);
+  background:var(--bg);
+  color:var(--text);
+  font-size:14px;
+  line-height:1.55;
+  overflow-x:hidden;
+  min-height:100%;
+}
+html[dir="rtl"] body{font-family:var(--font-ur);font-size:15px;line-height:1.8;}
+img{max-width:100%;display:block;}
+button,input,select,textarea{font-family:inherit;}
+a{color:inherit;text-decoration:none;}
+
+/* ═══════════════════════════════════════
+   SCREEN MANAGER
+═══════════════════════════════════════ */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ═══════════════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════════════ */
+#screen-login{
+  background:linear-gradient(145deg,#2d4a27 0%,#4A6741 50%,#6a8f60 100%);
+  align-items:center;justify-content:center;
+  padding:20px;
+  position:relative;overflow:hidden;
+}
+#screen-login::before{
+  content:'';position:absolute;
+  width:400px;height:400px;
+  border-radius:50%;
+  background:rgba(255,255,255,.04);
+  top:-100px;right:-100px;
+}
+#screen-login::after{
+  content:'';position:absolute;
+  width:300px;height:300px;
+  border-radius:50%;
+  background:rgba(255,255,255,.04);
+  bottom:-80px;left:-80px;
+}
+.login-box{
+  background:#fff;
+  border-radius:24px;
+  padding:36px 32px;
+  width:100%;max-width:400px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  position:relative;z-index:1;
+}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo-icon{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-mid));
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+  margin:0 auto 14px;
+  box-shadow:0 8px 24px rgba(74,103,65,.3);
+}
+.login-logo h1{font-size:26px;font-weight:800;color:var(--primary);}
+.login-logo p{color:var(--text-light);font-size:13px;margin-top:4px;}
+.login-tabs{
+  display:flex;background:var(--bg);border-radius:10px;
+  padding:4px;margin-bottom:24px;
+}
+.login-tab{
+  flex:1;padding:9px;border:none;background:transparent;
+  border-radius:8px;font-size:13px;font-weight:600;
+  color:var(--text-light);cursor:pointer;transition:all var(--transition);
+}
+.login-tab.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.login-form{display:none;}
+.login-form.active{display:block;}
+.lf-group{margin-bottom:16px;}
+.lf-group label{display:block;font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.lf-group input{
+  width:100%;padding:13px 16px;
+  border:2px solid var(--border);border-radius:10px;
+  font-size:14px;outline:none;
+  transition:border var(--transition);
+  background:var(--bg);
+}
+.lf-group input:focus{border-color:var(--primary);background:#fff;}
+.lf-forgot{text-align:right;margin-top:-8px;margin-bottom:16px;}
+.lf-forgot a{font-size:12px;color:var(--primary);font-weight:600;}
+.btn-login{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-mid));
+  color:#fff;border:none;border-radius:10px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all var(--transition);
+  box-shadow:0 4px 16px rgba(74,103,65,.35);
+}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(74,103,65,.45);}
+.login-divider{
+  text-align:center;color:var(--text-muted);
+  font-size:12px;margin:16px 0;
+  position:relative;
+}
+.login-divider::before,.login-divider::after{
+  content:'';position:absolute;top:50%;
+  width:40%;height:1px;background:var(--border);
+}
+.login-divider::before{left:0;}
+.login-divider::after{right:0;}
+.demo-info{
+  background:var(--primary-light);border-radius:10px;
+  padding:12px;text-align:center;margin-top:16px;
+  font-size:12px;color:var(--primary-dark);
+}
+
+/* ═══════════════════════════════════════
+   MAIN APP SCREEN
+═══════════════════════════════════════ */
+#screen-app{flex-direction:row;}
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+.sidebar{
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg,#1e3019 0%,#2d4a27 40%,#354d2f 100%);
+  color:#fff;
+  position:fixed;top:0;left:0;bottom:0;
+  display:flex;flex-direction:column;
+  z-index:1000;
+  transition:transform var(--transition);
+  overflow-y:auto;overflow-x:hidden;
+}
+html[dir="rtl"] .sidebar{left:auto;right:0;}
+.sidebar::-webkit-scrollbar{width:0;}
+
+.sidebar-head{
+  padding:20px 16px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.sidebar-brand{
+  display:flex;align-items:center;gap:12px;margin-bottom:14px;
+}
+.brand-icon{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,var(--accent),#e8c07a);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(200,169,110,.35);
+}
+.brand-text strong{font-size:17px;font-weight:800;display:block;}
+.brand-text span{font-size:10px;opacity:.6;letter-spacing:.5px;text-transform:uppercase;}
+
+.sidebar-profile{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.06);
+  border-radius:10px;padding:10px;
+  cursor:pointer;
+}
+.sp-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--primary-mid);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0;overflow:hidden;
+}
+.sp-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.sp-info strong{font-size:13px;display:block;}
+.sp-info span{font-size:10px;opacity:.6;}
+
+.sidebar-nav{flex:1;padding:10px 10px;}
+.nav-sec-label{
+  font-size:9px;text-transform:uppercase;letter-spacing:1.2px;
+  opacity:.4;padding:14px 8px 6px;font-weight:700;
+}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 12px;border-radius:10px;
+  cursor:pointer;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.65);
+  transition:all var(--transition);
+  border-left:3px solid transparent;
+  margin-bottom:1px;
+}
+html[dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
+.nav-item.active{
+  background:rgba(255,255,255,.13);
+  color:#fff;border-left-color:var(--accent);
+}
+html[dir="rtl"] .nav-item.active{border-left-color:transparent;border-right-color:var(--accent);}
+.nav-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
+.nav-label{flex:1;}
+.nav-badge{
+  background:var(--accent);color:#fff;
+  font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:20px;
+}
+
+.sidebar-foot{
+  padding:10px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+/* ═══════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════ */
+.main-wrap{
+  margin-left:var(--sidebar-w);
+  flex:1;display:flex;flex-direction:column;
+  min-height:100vh;
+  transition:margin var(--transition);
+  /* FIX 1: Prevent overflow/freezing on right side */
+  min-width:0;
+  max-width:calc(100vw - var(--sidebar-w));
+  overflow-x:hidden;
+}
+html[dir="rtl"] .main-wrap{margin-left:0;margin-right:var(--sidebar-w);}
+
+/* ═══════════════════════════════════════
+   TOP HEADER
+═══════════════════════════════════════ */
+.top-header{
+  height:var(--header-h);
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 20px;gap:8px;
+  position:sticky;top:0;z-index:900;
+  box-shadow:0 2px 10px rgba(74,103,65,.06);
+  /* FIX 1: Prevent header overflow */
+  width:100%;
+  overflow:hidden;
+}
+.hamburger{
+  display:none;
+  background:none;border:none;
+  font-size:22px;cursor:pointer;
+  color:var(--text);padding:6px;
+  border-radius:8px;
+  flex-shrink:0;
+}
+.hamburger:hover{background:var(--bg);}
+.page-title-wrap{flex:1;min-width:0;}
+.page-title{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.page-subtitle{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.header-actions{
+  display:flex;align-items:center;gap:6px;
+  flex-shrink:0;
+}
+
+/* FIX 5: Lang switcher always visible & functional */
+.lang-switcher{
+  display:flex;
+  background:var(--bg);
+  border-radius:8px;
+  padding:3px;
+  border:1.5px solid var(--border);
+  flex-shrink:0;
+}
+.lang-btn{
+  padding:5px 10px;border:none;background:transparent;
+  border-radius:6px;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all var(--transition);
+  color:var(--text-light);
+  white-space:nowrap;
+  line-height:1.2;
+}
+.lang-btn.active{
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.header-btn{
+  width:36px;height:36px;border-radius:10px;
+  border:1.5px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:15px;transition:all var(--transition);
+  position:relative;flex-shrink:0;
+}
+.header-btn:hover{background:var(--primary-light);border-color:var(--primary);}
+.notif-dot{
+  position:absolute;top:5px;right:5px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--danger);border:2px solid #fff;
+}
+
+/* ═══════════════════════════════════════
+   OVERLAY
+═══════════════════════════════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:999;
+}
+.overlay.show{display:block;}
+
+/* ═══════════════════════════════════════
+   PAGES
+═══════════════════════════════════════ */
+.page{display:none;flex:1;padding:20px;width:100%;overflow-x:hidden;}
+.page.active{display:block;}
+
+/* ═══════════════════════════════════════
+   CARDS
+═══════════════════════════════════════ */
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card-header{
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;
+}
+.card-title{font-size:14px;font-weight:700;color:var(--text);}
+.card-body{padding:16px;}
+
+/* ═══════════════════════════════════════
+   KPI CARDS
+═══════════════════════════════════════ */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:16px;
+}
+.kpi-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:14px 12px;
+  display:flex;align-items:flex-start;gap:10px;
+  transition:transform var(--transition),box-shadow var(--transition);
+  cursor:pointer;
+  min-width:0;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.kpi-icon-wrap{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.kpi-text{min-width:0;flex:1;}
+.kpi-text .kpi-val{font-size:20px;font-weight:800;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kpi-text .kpi-lbl{font-size:11px;color:var(--text-light);margin-top:2px;font-weight:500;}
+.kpi-text .kpi-sub{font-size:10px;color:var(--success);margin-top:3px;font-weight:600;}
+
+/* ═══════════════════════════════════════
+   GRIDS
+═══════════════════════════════════════ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.flex-end{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+.flex-center{display:flex;align-items:center;justify-content:center;}
+.flex-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.mb-2{margin-bottom:8px;}
+.mb-3{margin-bottom:12px;}
+.mb-4{margin-bottom:16px;}
+.mb-5{margin-bottom:20px;}
+.mt-3{margin-top:12px;}
+.mt-4{margin-top:16px;}
+.gap-2{gap:8px;}
+
+/* ═══════════════════════════════════════
+   FORM ELEMENTS
+═══════════════════════════════════════ */
+.form-group{margin-bottom:14px;}
+.form-group label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--text-light);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+html[dir="rtl"] .form-group label{text-transform:none;font-size:13px;letter-spacing:0;}
+.form-control{
+  width:100%;padding:11px 14px;
+  border:2px solid var(--border);border-radius:10px;
+  font-size:14px;font-family:inherit;
+  background:#fff;color:var(--text);
+  transition:border var(--transition),box-shadow var(--transition);
+  outline:none;
+  -webkit-appearance:none;
+}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(74,103,65,.1);}
+textarea.form-control{resize:vertical;min-height:80px;}
+html[dir="rtl"] .form-control{text-align:right;}
+.input-wrap{position:relative;}
+.input-icon{
+  position:absolute;top:50%;transform:translateY(-50%);
+  left:12px;color:var(--text-muted);font-size:15px;pointer-events:none;
+}
+html[dir="rtl"] .input-icon{left:auto;right:12px;}
+.input-wrap .form-control{padding-left:38px;}
+html[dir="rtl"] .input-wrap .form-control{padding-left:14px;padding-right:38px;}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 16px;border-radius:10px;
+  border:2px solid transparent;cursor:pointer;
+  font-size:13px;font-weight:700;font-family:inherit;
+  transition:all var(--transition);white-space:nowrap;
+  -webkit-appearance:none;
+}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);}
+.btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);}
+.btn-success{background:var(--success);color:#fff;border-color:var(--success);}
+.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger);}
+.btn-warning{background:var(--warning);color:#fff;border-color:var(--warning);}
+.btn-wa{background:#25D366;color:#fff;border-color:#25D366;}
+.btn-wa:hover{background:#1da851;}
+.btn-outline{background:transparent;color:var(--primary);border-color:var(--primary);}
+.btn-outline:hover{background:var(--primary-light);}
+.btn-ghost{background:transparent;color:var(--text-light);border-color:var(--border);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:8px;}
+.btn-lg{padding:13px 26px;font-size:15px;}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:9px;font-size:14px;}
+.btn-block{width:100%;}
+
+/* ═══════════════════════════════════════
+   BADGES
+═══════════════════════════════════════ */
+.badge{
+  display:inline-block;padding:3px 9px;
+  border-radius:20px;font-size:11px;font-weight:700;
+  white-space:nowrap;
+}
+.badge-success{background:#d5f5e3;color:#1a7a42;}
+.badge-warning{background:#fdecd0;color:#b7610e;}
+.badge-danger{background:#fad7d3;color:#922b21;}
+.badge-info{background:#d2e9f8;color:#1a6fa0;}
+.badge-primary{background:var(--primary-light);color:var(--primary-dark);}
+.badge-default{background:var(--bg);color:var(--text-light);}
+.badge-accent{background:var(--accent-light);color:#8a6010;}
+
+/* ═══════════════════════════════════════
+   AVATAR
+═══════════════════════════════════════ */
+.avatar{
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:#fff;flex-shrink:0;
+  overflow:hidden;position:relative;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.av-sm{width:34px;height:34px;font-size:12px;}
+.av-md{width:44px;height:44px;font-size:16px;}
+.av-lg{width:64px;height:64px;font-size:24px;}
+.av-xl{width:84px;height:84px;font-size:30px;}
+
+/* ═══════════════════════════════════════
+   TABLE
+═══════════════════════════════════════ */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:480px;}
+th{
+  padding:10px 12px;text-align:left;
+  font-size:11px;font-weight:700;color:var(--text-light);
+  text-transform:uppercase;letter-spacing:.5px;
+  background:var(--bg);white-space:nowrap;
+}
+html[dir="rtl"] th{text-align:right;}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f9fbf8;}
+html[dir="rtl"] td{text-align:right;}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:2000;
+  align-items:flex-start;justify-content:center;
+  padding:16px;overflow-y:auto;
+}
+.modal-overlay.show{display:flex;}
+.modal{
+  background:#fff;border-radius:20px;
+  width:100%;max-width:600px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  animation:mIn .22s ease;margin:auto;
+}
+.modal-lg{max-width:760px;}
+.modal-xl{max-width:920px;}
+@keyframes mIn{from{opacity:0;transform:translateY(-24px) scale(.97);}to{opacity:1;transform:none;}}
+.modal-head{
+  padding:16px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+}
+.modal-head-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--primary-light);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.modal-title{font-size:15px;font-weight:700;flex:1;}
+.modal-close{
+  width:30px;height:30px;border-radius:8px;
+  border:none;background:none;
+  font-size:17px;cursor:pointer;
+  color:var(--text-light);
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-close:hover{background:var(--bg);}
+.modal-body{padding:18px;max-height:72vh;overflow-y:auto;}
+.modal-body::-webkit-scrollbar{width:4px;}
+.modal-body::-webkit-scrollbar-track{background:transparent;}
+.modal-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.modal-foot{
+  padding:12px 18px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;
+}
+
+/* ═══════════════════════════════════════
+   SEARCH BAR
+═══════════════════════════════════════ */
+.search-row{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:16px;flex-wrap:wrap;
+}
+.search-box{flex:1;min-width:180px;}
+
+/* ═══════════════════════════════════════
+   CUSTOMER CARD
+═══════════════════════════════════════ */
+.cust-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:14px;
+}
+.cust-card{
+  background:#fff;border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px;
+  display:flex;align-items:center;gap:14px;
+  transition:all var(--transition);cursor:pointer;
+  border:2px solid transparent;
+}
+.cust-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.cust-info{flex:1;min-width:0;}
+.cust-name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cust-phone{font-size:12px;color:var(--text-light);margin-top:2px;}
+.cust-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.tag{
+  display:inline-block;padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:700;
+  background:var(--primary-light);color:var(--primary-dark);
+}
+
+/* ═══════════════════════════════════════
+   MEASUREMENT GRID
+═══════════════════════════════════════ */
+.meas-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:10px;
+}
+.meas-field{
+  background:var(--bg);border-radius:10px;
+  padding:12px 10px;text-align:center;
+  border:2px solid var(--border);
+  transition:border var(--transition);
+}
+.meas-field:focus-within{border-color:var(--primary);}
+.meas-field .mf-val{
+  width:100%;border:none;background:transparent;
+  text-align:center;font-size:20px;font-weight:800;
+  color:var(--primary);outline:none;font-family:inherit;
+}
+.meas-field .mf-icon{font-size:18px;margin-bottom:4px;}
+.meas-field .mf-lbl{font-size:10px;color:var(--text-light);font-weight:600;margin-top:2px;}
+html[dir="rtl"] .meas-field .mf-lbl{font-size:12px;}
+
+/* ═══════════════════════════════════════
+   CUSTOM FIELD CHIPS
+═══════════════════════════════════════ */
+.chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:20px;
+  background:var(--primary-light);color:var(--primary-dark);
+  font-size:12px;font-weight:700;
+}
+.chip-x{
+  background:none;border:none;color:var(--danger);
+  cursor:pointer;font-size:15px;line-height:1;padding:0;
+}
+
+/* ═══════════════════════════════════════
+   STATUS STEPS
+═══════════════════════════════════════ */
+.order-steps{
+  display:flex;align-items:flex-start;
+  overflow-x:auto;padding-bottom:6px;
+  gap:0;margin-bottom:16px;
+}
+.order-steps::-webkit-scrollbar{height:0;}
+.ostep{
+  display:flex;flex-direction:column;align-items:center;
+  flex:1;min-width:70px;text-align:center;position:relative;
+}
+.ostep::before{
+  content:'';position:absolute;
+  top:13px;left:calc(50% + 13px);
+  width:calc(100% - 26px);height:2px;
+  background:var(--border);
+}
+.ostep:last-child::before{display:none;}
+.ostep.done::before,.ostep.active::before{background:var(--primary);}
+.ostep-dot{
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;
+  border:2px solid var(--border);
+  background:#fff;color:var(--text-light);
+  position:relative;z-index:1;transition:all var(--transition);
+}
+.ostep.done .ostep-dot{background:var(--success);border-color:var(--success);color:#fff;}
+.ostep.active .ostep-dot{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 0 0 4px rgba(74,103,65,.15);}
+.ostep-lbl{font-size:9px;margin-top:6px;color:var(--text-light);font-weight:600;}
+.ostep.done .ostep-lbl,.ostep.active .ostep-lbl{color:var(--text);}
+
+/* ═══════════════════════════════════════
+   REPORT CHART
+═══════════════════════════════════════ */
+.chart-area{
+  display:flex;align-items:flex-end;gap:6px;
+  height:140px;overflow-x:auto;padding:8px 0;
+}
+.chart-area::-webkit-scrollbar{height:4px;}
+.chart-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.chart-col{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:40px;}
+.chart-bar{width:32px;border-radius:6px 6px 0 0;min-height:4px;transition:height .4s ease;}
+.chart-val{font-size:9px;color:var(--text-light);font-weight:700;}
+.chart-lbl{font-size:9px;color:var(--text-light);text-align:center;max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ═══════════════════════════════════════
+   SETTINGS TABS
+═══════════════════════════════════════ */
+.stabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:2px solid var(--border);margin-bottom:20px;}
+.stab{
+  padding:10px 16px;border:none;background:none;
+  cursor:pointer;font-size:13px;font-weight:600;
+  color:var(--text-light);border-bottom:2.5px solid transparent;
+  margin-bottom:-2px;font-family:inherit;transition:all var(--transition);
+}
+.stab.active{color:var(--primary);border-bottom-color:var(--primary);}
+
+/* ═══════════════════════════════════════
+   PROFILE PICTURE UPLOAD
+═══════════════════════════════════════ */
+.pic-upload{
+  display:flex;flex-direction:column;align-items:center;
+  gap:10px;padding:16px;
+  background:var(--bg);border-radius:12px;
+  border:2px dashed var(--border);
+  cursor:pointer;transition:border var(--transition);
+}
+.pic-upload:hover{border-color:var(--primary);}
+.pic-upload input{display:none;}
+.pic-upload p{font-size:12px;color:var(--text-muted);}
+
+/* ═══════════════════════════════════════
+   INVOICE BOX
+═══════════════════════════════════════ */
+.inv-box{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+.inv-head{
+  background:linear-gradient(135deg,var(--primary),var(--primary-mid));
+  color:#fff;padding:20px 24px;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  flex-wrap:wrap;gap:12px;
+}
+.inv-meta{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;padding:14px 24px;background:var(--bg);
+}
+.inv-meta-box{
+  background:#fff;border-radius:8px;padding:12px;
+  font-size:12px;line-height:1.8;
+}
+.inv-meta-box strong{
+  display:block;font-size:10px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:3px;letter-spacing:.5px;
+}
+.inv-tbl{width:calc(100% - 48px);margin:0 24px 16px;border-collapse:collapse;}
+.inv-tbl th{background:var(--bg);padding:8px 10px;font-size:11px;text-transform:uppercase;color:var(--text-light);text-align:left;}
+.inv-tbl td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;}
+.inv-totals{padding:14px 24px;}
+.inv-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;}
+.inv-row.grand{font-size:16px;font-weight:800;color:var(--primary);border-top:2px solid var(--border);margin-top:8px;padding-top:10px;}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+html[dir="rtl"] .toast-wrap{right:auto;left:20px;}
+.toast{
+  background:#fff;border-radius:12px;
+  box-shadow:0 4px 24px rgba(0,0,0,.14);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;font-weight:600;
+  animation:tIn .25s ease;
+  border-left:4px solid var(--primary);
+  min-width:220px;max-width:320px;
+}
+html[dir="rtl"] .toast{border-left:none;border-right:4px solid var(--primary);}
+.toast.success{border-color:var(--success);}
+.toast.error{border-color:var(--danger);}
+.toast.warning{border-color:var(--warning);}
+@keyframes tIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:none;}}
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════ */
+.empty{text-align:center;padding:48px 20px;color:var(--text-light);}
+.empty-icon{font-size:52px;margin-bottom:14px;display:block;opacity:.5;}
+.empty p{font-size:14px;margin-bottom:16px;}
+
+/* ═══════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════ */
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+/* ═══════════════════════════════════════
+   FIX 2 & 3: DASHBOARD LAYOUT – Quick Actions + Today's Summary
+═══════════════════════════════════════ */
+
+/* Dashboard two-column layout */
+.dash-grid{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:16px;
+  margin-bottom:16px;
+  align-items:start;
+}
+
+/* FIX 2: Quick Actions – compact 4-col grid */
+.qa-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.qa-btn{
+  background:var(--primary-light);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:10px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;transition:all var(--transition);font-family:inherit;
+  width:100%;
+}
+.qa-btn:hover{border-color:var(--primary);background:#ddebd8;transform:translateY(-1px);}
+.qa-icon{font-size:20px;line-height:1;}
+.qa-label{font-size:10px;font-weight:700;color:var(--primary-dark);text-align:center;line-height:1.2;}
+
+/* FIX 3: Today's Summary – boxed grid style */
+.today-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.today-box{
+  background:var(--bg);
+  border-radius:10px;
+  padding:12px 10px;
+  text-align:center;
+  border:1.5px solid var(--border);
+  cursor:pointer;
+  transition:all var(--transition);
+  text-decoration:none;
+  display:block;
+}
+.today-box:hover{border-color:var(--primary);background:var(--primary-light);transform:translateY(-1px);}
+.today-box-val{
+  font-size:22px;font-weight:800;
+  line-height:1.1;margin-bottom:3px;
+}
+.today-box-lbl{
+  font-size:10px;font-weight:600;
+  color:var(--text-light);
+  line-height:1.3;
+}
+
+/* ═══════════════════════════════════════
+   NOTIFICATION PANEL
+═══════════════════════════════════════ */
+.notif-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px;border-bottom:1px solid var(--border);
+}
+.notif-item:last-child{border-bottom:none;}
+.notif-dot2{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--primary);flex-shrink:0;margin-top:4px;
+}
+.notif-dot2.read{background:var(--border);}
+
+/* ═══════════════════════════════════════
+   FIX 4: Clickable rows/items on dashboard
+═══════════════════════════════════════ */
+.clickable-row{cursor:pointer;transition:background var(--transition);}
+.clickable-row:hover td{background:#eef6eb!important;}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE – TABLET
+═══════════════════════════════════════ */
+@media(max-width:1100px){
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .dash-grid{grid-template-columns:1fr;}
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE – MOBILE   ← FIX 1 main
+═══════════════════════════════════════ */
+@media(max-width:768px){
+  :root{--header-h:54px;}
+
+  /* Sidebar slides in, does NOT freeze the page */
+  .sidebar{transform:translateX(-100%);width:240px;}
+  html[dir="rtl"] .sidebar{transform:translateX(100%);}
+  .sidebar.open{transform:none;}
+
+  /* Main wrap takes full width on mobile */
+  .main-wrap{
+    margin-left:0!important;
+    margin-right:0!important;
+    max-width:100vw;
+    width:100%;
+  }
+
+  .hamburger{display:flex;}
+  .top-header{padding:0 12px;gap:6px;}
+  .page{padding:12px;}
+
+  /* KPI grid 2-col on mobile */
+  .kpi-row{grid-template-columns:repeat(2,1fr);gap:8px;}
+
+  /* General grids collapse */
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .g2.keep2{grid-template-columns:1fr 1fr;}
+
+  /* Dashboard layout stacks */
+  .dash-grid{grid-template-columns:1fr;gap:12px;}
+
+  /* Quick actions 4-col stays on mobile (compact) */
+  .qa-grid{grid-template-columns:repeat(4,1fr);gap:6px;}
+  .qa-btn{padding:8px 2px;}
+  .qa-icon{font-size:18px;}
+  .qa-label{font-size:9px;}
+
+  /* Today summary 2-col */
+  .today-summary-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
+
+  /* FIX 5: Lang switcher always visible on mobile */
+  .lang-switcher{display:flex;}
+  .lang-btn{padding:4px 8px;font-size:11px;}
+
+  /* Header actions compact */
+  .header-btn{width:32px;height:32px;font-size:14px;}
+  .page-title{font-size:14px;}
+  .page-subtitle{display:none;}
+
+  .cust-grid{grid-template-columns:1fr;}
+  .modal{max-width:100%;border-radius:16px;}
+  .modal-body{max-height:65vh;}
+  .modal-foot{flex-direction:column;}
+  .modal-foot .btn{width:100%;}
+  .meas-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));}
+  .inv-meta{grid-template-columns:1fr;}
+  .inv-head{flex-direction:column;}
+  table{min-width:440px;}
+  .ostep-lbl{font-size:8px;}
+}
+
+@media(max-width:400px){
+  .kpi-row{grid-template-columns:repeat(2,1fr);gap:6px;}
+  .kpi-card{padding:10px 8px;}
+  .kpi-text .kpi-val{font-size:16px;}
+  .kpi-icon-wrap{width:34px;height:34px;font-size:15px;}
+  .modal-body{max-height:60vh;}
+  .login-box{padding:24px 18px;}
+  .login-logo h1{font-size:22px;}
+  .today-summary-grid{grid-template-columns:repeat(2,1fr);}
+  .qa-grid{gap:4px;}
+  .qa-btn{padding:6px 2px;}
+  .qa-icon{font-size:16px;}
+  .lang-btn{padding:3px 6px;font-size:10px;}
+}
+
+/* ═══════════════════════════════════════
+   RTL FIXES
+═══════════════════════════════════════ */
+html[dir="rtl"] .toast-wrap{right:auto;left:20px;}
+html[dir="rtl"] .nav-item{padding-right:12px;}
+html[dir="rtl"] .cust-card{text-align:right;}
+html[dir="rtl"] .modal-head{flex-direction:row-reverse;}
+html[dir="rtl"] .modal-head .modal-close{margin-left:0;margin-right:auto;}
+html[dir="rtl"] .flex-row{flex-direction:row-reverse;}
+html[dir="rtl"] .flex-between{flex-direction:row-reverse;}
+html[dir="rtl"] .kpi-card{flex-direction:row-reverse;text-align:right;}
+html[dir="rtl"] .badge,.html[dir="rtl"] .tag{direction:rtl;}
+html[dir="rtl"] .sidebar{transform:translateX(100%);}
+html[dir="rtl"] .sidebar.open{transform:none;}
+
+/* ═══════════════════════════════════════
+   PRINT
+═══════════════════════════════════════ */
+@media print{
+  .sidebar,.top-header,.modal-overlay,.toast-wrap,.no-print{display:none!important;}
+  .main-wrap{margin:0!important;}
+  .page{display:block!important;padding:0!important;}
+  .card{box-shadow:none!important;border:1px solid #ddd!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ▓▓▓▓▓▓ TOAST CONTAINER ▓▓▓▓▓▓ -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- ▓▓▓▓▓▓ OVERLAY ▓▓▓▓▓▓ -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 1 : LOGIN
+════════════════════════════════════════ -->
+<div class="screen active" id="screen-login">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">✂️</div>
+      <h1>StitchHub</h1>
+      <p>Smart Tailor Management System</p>
+    </div>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+      <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+    </div>
+    <!-- LOGIN FORM -->
+    <div class="login-form active" id="ltab-login">
+      <div class="lf-group">
+        <label>Email / Phone</label>
+        <input type="text" id="l-email" value="admin@stitchhub.pk" placeholder="Email or phone"/>
+      </div>
+      <div class="lf-group">
+        <label>Password</label>
+        <input type="password" id="l-pass" value="123456" placeholder="Password"/>
+      </div>
+      <div class="lf-forgot"><a href="#">Forgot password?</a></div>
+      <button class="btn-login" onclick="doLogin()">Login to StitchHub</button>
+      <div class="demo-info">
+        🎯 Demo: <strong>admin@stitchhub.pk</strong> / <strong>123456</strong>
+      </div>
+    </div>
+    <!-- REGISTER FORM -->
+    <div class="login-form" id="ltab-register">
+      <div class="lf-group">
+        <label>Shop Name</label>
+        <input type="text" id="r-shop" placeholder="Al-Noor Tailors"/>
+      </div>
+      <div class="lf-group">
+        <label>Your Name</label>
+        <input type="text" id="r-name" placeholder="Muhammad Ali"/>
+      </div>
+      <div class="lf-group">
+        <label>Phone / WhatsApp</label>
+        <input type="text" id="r-phone" placeholder="+92 300 1234567"/>
+      </div>
+      <div class="lf-group">
+        <label>Password</label>
+        <input type="password" id="r-pass" placeholder="Min 6 characters"/>
+      </div>
+      <button class="btn-login" onclick="doRegister()">Create Free Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 2 : MAIN APP
+════════════════════════════════════════ -->
+<div class="screen" id="screen-app">
+
+  <!-- ▒▒▒ SIDEBAR ▒▒▒ -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-brand">
+        <div class="brand-icon">✂️</div>
+        <div class="brand-text">
+          <strong>StitchHub</strong>
+          <span id="sb-shopname">Smart Tailor</span>
+        </div>
+      </div>
+      <div class="sidebar-profile" onclick="showPage('settings')">
+        <div class="sp-avatar" id="sb-avatar-wrap">
+          <span id="sb-initials">A</span>
+        </div>
+        <div class="sp-info">
+          <strong id="sb-uname">Admin</strong>
+          <span id="sb-role">Owner</span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-sec-label" data-i18n="main">MAIN</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label" data-i18n="dashboard">Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="showPage('customers')">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label" data-i18n="customers">Customers</span>
+      </div>
+      <div class="nav-item" onclick="showPage('measurements')">
+        <span class="nav-icon">📏</span>
+        <span class="nav-label" data-i18n="measurements">Measurements</span>
+      </div>
+      <div class="nav-item" onclick="showPage('orders')">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label" data-i18n="orders">Orders</span>
+        <span class="nav-badge" id="nb-orders">0</span>
+      </div>
+      <div class="nav-sec-label" data-i18n="business">BUSINESS</div>
+      <div class="nav-item" onclick="showPage('billing')">
+        <span class="nav-icon">💰</span>
+        <span class="nav-label" data-i18n="billing">Billing</span>
+      </div>
+      <div class="nav-item" onclick="showPage('reports')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label" data-i18n="reports">Reports</span>
+      </div>
+      <div class="nav-item" onclick="showPage('notifications')">
+        <span class="nav-icon">🔔</span>
+        <span class="nav-label" data-i18n="notifications">Notifications</span>
+      </div>
+      <div class="nav-sec-label">SYSTEM</div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label" data-i18n="settings">Settings</span>
+      </div>
+    </div>
+    <div class="sidebar-foot">
+      <div class="nav-item" onclick="doLogout()" style="color:rgba(255,120,120,.85)">
+        <span class="nav-icon">🚪</span>
+        <span class="nav-label" data-i18n="logout">Logout</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ▒▒▒ MAIN WRAP ▒▒▒ -->
+  <div class="main-wrap">
+
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="page-title-wrap">
+        <div class="page-title" id="hdr-title">Dashboard</div>
+        <div class="page-subtitle" id="hdr-sub">Welcome back!</div>
+      </div>
+      <div class="header-actions">
+        <!-- FIX 5: Language switcher always visible, properly styled -->
+        <div class="lang-switcher" id="lang-switcher-wrap">
+          <button class="lang-btn active" id="lbtn-en" onclick="applyLang('en')">EN</button>
+          <button class="lang-btn" id="lbtn-ur" onclick="applyLang('ur')">اردو</button>
+        </div>
+        <button class="header-btn" onclick="showPage('notifications')" title="Notifications">
+          🔔<span class="notif-dot" id="notif-indicator" style="display:none"></span>
+        </button>
+        <button class="header-btn no-print" onclick="openModal('modal-quick-add')" title="Quick Add"
+          style="background:var(--primary);border-color:var(--primary);color:#fff;font-size:18px;font-weight:700;">+</button>
+      </div>
+    </header>
+
+    <!-- ══════ DASHBOARD ══════ -->
+    <div class="page active" id="page-dashboard">
+
+      <!-- KPI Row: clickable cards → FIX 4 -->
+      <div class="kpi-row" id="kpi-row"></div>
+
+      <!-- Main Dashboard Grid -->
+      <div class="dash-grid mb-4">
+
+        <!-- Left: Recent Orders -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" data-i18n="recent_orders">📋 Recent Orders</div>
+            <button class="btn btn-sm btn-outline" onclick="showPage('orders')" data-i18n="view_all">View All</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="order">Order</th>
+                <th data-i18n="customer">Customer</th>
+                <th data-i18n="garment">Garment</th>
+                <th data-i18n="status">Status</th>
+              </tr></thead>
+              <tbody id="dash-orders-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Quick Actions + Today Summary (FIX 2 & 3) -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+
+          <!-- Quick Actions Card -->
+          <div class="card">
+            <div class="card-header" style="padding:12px 14px;">
+              <div class="card-title" data-i18n="quick_actions">⚡ Quick Actions</div>
+            </div>
+            <div class="card-body" style="padding:12px;">
+              <div class="qa-grid">
+                <button class="qa-btn" onclick="openModal('modal-new-customer')">
+                  <span class="qa-icon">👤</span>
+                  <span class="qa-label" data-i18n="add_customer">Add Customer</span>
+                </button>
+                <button class="qa-btn" onclick="openModal('modal-new-order')">
+                  <span class="qa-icon">📋</span>
+                  <span class="qa-label" data-i18n="new_order">New Order</span>
+                </button>
+                <button class="qa-btn" onclick="openModal('modal-measurement')">
+                  <span class="qa-icon">📏</span>
+                  <span class="qa-label" data-i18n="measure">Measure</span>
+                </button>
+                <button class="qa-btn" onclick="openModal('modal-invoice')">
+                  <span class="qa-icon">🧾</span>
+                  <span class="qa-label" data-i18n="invoice">Invoice</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's Summary Card (FIX 3: boxed style) -->
+          <div class="card">
+            <div class="card-header" style="padding:12px 14px;">
+              <div class="card-title" data-i18n="today">📅 Today's Summary</div>
+            </div>
+            <div class="card-body" style="padding:12px;">
+              <div id="today-cards"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Deliveries Due -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" data-i18n="delivery_today">🚚 Deliveries Due Soon</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th data-i18n="order">Order</th>
+              <th data-i18n="customer">Customer</th>
+              <th data-i18n="garment">Garment</th>
+              <th data-i18n="delivery">Delivery</th>
+              <th data-i18n="status">Status</th>
+              <th>Action</th>
+            </tr></thead>
+            <tbody id="dash-due-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ CUSTOMERS ══════ -->
+    <div class="page" id="page-customers">
+      <div class="search-row">
+        <div class="search-box input-wrap">
+          <span class="input-icon">🔍</span>
+          <input type="text" class="form-control" id="cust-q" placeholder="Search customers..." oninput="renderCustomers()" data-i18n-ph="search_cust"/>
+        </div>
+        <select class="form-control" id="cust-style-f" onchange="renderCustomers()" style="width:auto;min-width:130px">
+          <option value="">All Styles</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('modal-new-customer')">+ <span data-i18n="add_customer">Add Customer</span></button>
+      </div>
+      <div class="cust-grid" id="cust-grid"></div>
+    </div>
+
+    <!-- ══════ MEASUREMENTS ══════ -->
+    <div class="page" id="page-measurements">
+      <div class="search-row">
+        <div class="search-box input-wrap">
+          <span class="input-icon">🔍</span>
+          <input type="text" class="form-control" id="meas-q" placeholder="Search measurements..." oninput="renderMeasurements()" data-i18n-ph="search_meas"/>
+        </div>
+        <select class="form-control" id="meas-gf" onchange="renderMeasurements()" style="width:auto;min-width:130px">
+          <option value="">All Garments</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('modal-measurement')">+ <span data-i18n="add_measurement">Add Measurement</span></button>
+      </div>
+      <div id="meas-container"></div>
+    </div>
+
+    <!-- ══════ ORDERS ══════ -->
+    <div class="page" id="page-orders">
+      <div class="search-row">
+        <div class="search-box input-wrap">
+          <span class="input-icon">🔍</span>
+          <input type="text" class="form-control" id="ord-q" placeholder="Search orders..." oninput="renderOrders()" data-i18n-ph="search_ord"/>
+        </div>
+        <select class="form-control" id="ord-sf" onchange="renderOrders()" style="width:auto;min-width:120px">
+          <option value="">All Status</option>
+        </select>
+        <select class="form-control" id="ord-gf" onchange="renderOrders()" style="width:auto;min-width:130px">
+          <option value="">All Garments</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('modal-new-order')">+ <span data-i18n="new_order">New Order</span></button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th data-i18n="order">Order</th>
+              <th data-i18n="customer">Customer</th>
+              <th data-i18n="garment">Garment</th>
+              <th data-i18n="delivery">Delivery</th>
+              <th data-i18n="price">Price</th>
+              <th data-i18n="status">Status</th>
+              <th>Actions</th>
+            </tr></thead>
+            <tbody id="ord-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ BILLING ══════ -->
+    <div class="page" id="page-billing">
+      <div class="kpi-row" id="bill-kpis" style="margin-bottom:16px"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" data-i18n="payment_records">Payment Records</div>
+          <div class="flex-row">
+            <select class="form-control btn-sm" id="bill-f" onchange="renderBilling()" style="width:auto">
+              <option value="all">All</option>
+              <option value="unpaid">Unpaid</option>
+              <option value="partial">Partial</option>
+              <option value="paid">Paid</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-invoice')">+ <span data-i18n="new_invoice">Invoice</span></button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th data-i18n="order">Order</th>
+              <th data-i18n="customer">Customer</th>
+              <th data-i18n="garment">Garment</th>
+              <th data-i18n="total">Total</th>
+              <th data-i18n="paid">Paid</th>
+              <th data-i18n="balance">Balance</th>
+              <th data-i18n="status">Status</th>
+              <th>Actions</th>
+            </tr></thead>
+            <tbody id="bill-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ REPORTS ══════ -->
+    <div class="page" id="page-reports">
+      <div class="card mb-4">
+        <div class="card-header">
+          <div class="card-title" data-i18n="report_filters">📅 Report Filters</div>
+          <button class="btn btn-primary btn-sm" onclick="renderReports()" data-i18n="generate">Generate</button>
+        </div>
+        <div class="card-body">
+          <div class="g3 mb-3">
+            <div class="form-group" style="margin-bottom:0">
+              <label data-i18n="start_date">Start Date</label>
+              <input type="date" class="form-control" id="rpt-s"/>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label data-i18n="end_date">End Date</label>
+              <input type="date" class="form-control" id="rpt-e"/>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label data-i18n="quick_range">Quick Range</label>
+              <select class="form-control" id="rpt-quick" onchange="setQuickRange(this.value)">
+                <option value="">Custom</option>
+                <option value="7">Last 7 Days</option>
+                <option value="30">Last 30 Days</option>
+                <option value="90">Last 3 Months</option>
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+              </select>
+            </div>
+          </div>
+          <div class="g3">
+            <div class="form-group" style="margin-bottom:0">
+              <label data-i18n="garment_filter">Dress Category</label>
+              <select class="form-control" id="rpt-garment">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label data-i18n="status_filter">Status</label>
+              <select class="form-control" id="rpt-status">
+                <option value="">All Status</option>
+                <option>Received</option><option>Cutting</option><option>Stitching</option>
+                <option>Trial</option><option>Finishing</option><option>Ready</option><option>Delivered</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label data-i18n="customer_filter">Customer</label>
+              <select class="form-control" id="rpt-cust">
+                <option value="">All Customers</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="g4 mb-4" id="rpt-kpis"></div>
+      <div class="g2 mb-4">
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="sales_chart">📈 Sales by Date</div></div>
+          <div class="card-body"><div class="chart-area" id="chart-date"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="cat_chart">👗 By Category</div></div>
+          <div class="card-body"><div class="chart-area" id="chart-cat"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" data-i18n="filtered_orders">Filtered Orders</div>
+          <span id="rpt-count" style="font-size:12px;color:var(--text-muted)"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Order</th><th>Customer</th><th>Garment</th>
+              <th>Date</th><th>Status</th><th>Price</th><th>Balance</th>
+            </tr></thead>
+            <tbody id="rpt-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ NOTIFICATIONS ══════ -->
+    <div class="page" id="page-notifications">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" data-i18n="notifications">🔔 Notifications</div>
+          <button class="btn btn-sm btn-ghost" onclick="clearNotifs()" data-i18n="clear_all">Clear All</button>
+        </div>
+        <div id="notif-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════ SETTINGS ══════ -->
+    <div class="page" id="page-settings">
+      <div class="stabs" id="stabs">
+        <button class="stab active" onclick="showStab('shop')" data-i18n="shop_info">🏪 Shop Info</button>
+        <button class="stab" onclick="showStab('profile')" data-i18n="my_profile">👤 Profile</button>
+        <button class="stab" onclick="showStab('messaging')" data-i18n="messaging">📱 Messaging</button>
+        <button class="stab" onclick="showStab('fields')" data-i18n="custom_fields">📋 Custom Fields</button>
+        <button class="stab" onclick="showStab('appear')" data-i18n="appearance">🎨 Appearance</button>
+        <button class="stab" onclick="showStab('staff')" data-i18n="staff">👷 Staff</button>
+      </div>
+      <div id="stab-content"></div>
+    </div>
+
+  </div><!-- end main-wrap -->
+</div><!-- end screen-app -->
+
+<!-- ════════════════════════════════════════
+     MODALS
+════════════════════════════════════════ -->
+
+<!-- ADD CUSTOMER -->
+<div class="modal-overlay" id="modal-new-customer">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-icon">👤</div>
+      <div class="modal-title" data-i18n="add_customer">Add Customer</div>
+      <button class="modal-close" onclick="closeModal('modal-new-customer')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pic-upload mb-4" onclick="document.getElementById('c-pic-input').click()">
+        <input type="file" id="c-pic-input" accept="image/*" onchange="previewCustPic(this)"/>
+        <div id="c-pic-preview" class="avatar av-lg" style="background:var(--primary)">👤</div>
+        <p data-i18n="tap_to_upload">Tap to upload profile picture</p>
+      </div>
+      <div class="g2 keep2">
+        <div class="form-group"><label data-i18n="full_name">Full Name *</label><input class="form-control" type="text" id="c-name" placeholder="Muhammad Ali"/></div>
+        <div class="form-group"><label data-i18n="phone">Phone *</label><input class="form-control" type="text" id="c-phone" placeholder="+92 300 0000000"/></div>
+      </div>
+      <div class="form-group"><label data-i18n="address">Address</label><input class="form-control" type="text" id="c-addr" placeholder="House #, Street, City"/></div>
+      <div class="g2 keep2">
+        <div class="form-group">
+          <label data-i18n="style_pref">Style Preference</label>
+          <select class="form-control" id="c-style">
+            <option>Casual</option><option>Formal</option><option>Traditional</option>
+            <option>Sherwani</option><option>Ladies</option><option>Kids</option>
+          </select>
+        </div>
+        <div class="form-group"><label data-i18n="dob">Date of Birth</label><input class="form-control" type="date" id="c-dob"/></div>
+      </div>
+      <div class="form-group"><label data-i18n="email">Email (optional)</label><input class="form-control" type="email" id="c-email" placeholder="customer@email.com"/></div>
+      <div class="form-group"><label data-i18n="ref_by">Referred By</label><input class="form-control" type="text" id="c-ref" placeholder="Friend / Walk-in / Online"/></div>
+      <div class="form-group"><label data-i18n="notes">Notes</label><textarea class="form-control" id="c-notes" placeholder="Any special preferences..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-customer')" data-i18n="cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCustomer()" data-i18n="save_customer">Save Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW CUSTOMER PROFILE -->
+<div class="modal-overlay" id="modal-view-customer">
+  <div class="modal modal-xl">
+    <div class="modal-head">
+      <div class="modal-head-icon">👤</div>
+      <div class="modal-title" id="vc-title">Customer Profile</div>
+      <button class="modal-close" onclick="closeModal('modal-view-customer')">✕</button>
+    </div>
+    <div class="modal-body" id="vc-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-view-customer')" data-i18n="close">Close</button>
+      <button class="btn btn-wa" onclick="sendCustomerWA()">📱 WhatsApp</button>
+      <button class="btn btn-primary" onclick="dlCustPDF()">📄 <span data-i18n="pdf">PDF</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MEASUREMENT -->
+<div class="modal-overlay" id="modal-measurement">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-head-icon">📏</div>
+      <div class="modal-title" data-i18n="add_measurement">Add Measurement</div>
+      <button class="modal-close" onclick="closeModal('modal-measurement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="g2 keep2 mb-3">
+        <div class="form-group"><label data-i18n="customer">Customer *</label>
+          <select class="form-control" id="m-cust"><option value="">Select...</option></select>
+        </div>
+        <div class="form-group"><label data-i18n="garment_type">Garment *</label>
+          <select class="form-control" id="m-garment" onchange="buildMeasFields()">
+            <option>Shalwar Kameez</option><option>Shirt</option><option>Pant</option>
+            <option>Coat</option><option>Ladies Dress</option><option>Sherwani</option><option>Waistcoat</option>
+          </select>
+        </div>
+      </div>
+      <div class="g2 keep2 mb-3">
+        <div class="form-group"><label data-i18n="unit">Unit</label>
+          <select class="form-control" id="m-unit" onchange="buildMeasFields()">
+            <option>inches</option><option>cm</option>
+          </select>
+        </div>
+        <div class="form-group"><label data-i18n="date">Date</label>
+          <input class="form-control" type="date" id="m-date"/>
+        </div>
+      </div>
+      <div class="meas-grid" id="meas-fields"></div>
+      <div style="background:var(--bg);border:2px dashed var(--border);border-radius:12px;padding:16px;margin-top:16px">
+        <div class="flex-between mb-3">
+          <strong style="font-size:13px" data-i18n="custom_fields_lbl">➕ Custom Fields</strong>
+          <span style="font-size:11px;color:var(--text-muted)" data-i18n="custom_hint">Add extra measurements</span>
+        </div>
+        <div class="g3 mb-3">
+          <div class="form-group" style="margin-bottom:0"><label data-i18n="field_name">Field Name</label><input class="form-control" type="text" id="cf-name" placeholder="Cuff, Armhole..."/></div>
+          <div class="form-group" style="margin-bottom:0"><label data-i18n="unit">Unit</label><input class="form-control" type="text" id="cf-unit" value="inches"/></div>
+          <div class="form-group" style="margin-bottom:0"><label data-i18n="scope">Scope</label>
+            <select class="form-control" id="cf-scope">
+              <option value="this" data-i18n="this_garment">This Garment</option>
+              <option value="global" data-i18n="all_garments">All Garments</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addCF()">+ <span data-i18n="add_field">Add Field</span></button>
+        <div class="chip-wrap" id="cf-chips"></div>
+        <div class="meas-grid mt-3" id="cf-inputs"></div>
+      </div>
+      <div class="form-group mt-4"><label data-i18n="notes">Notes</label><textarea class="form-control" id="m-notes" placeholder="Any notes..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-measurement')" data-i18n="cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMeasurement()" data-i18n="save_measurement">Save Measurement</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ORDER -->
+<div class="modal-overlay" id="modal-new-order">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-head-icon">📋</div>
+      <div class="modal-title" data-i18n="new_order">New Order</div>
+      <button class="modal-close" onclick="closeModal('modal-new-order')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="g2 keep2">
+        <div class="form-group"><label data-i18n="customer">Customer *</label><select class="form-control" id="o-cust"></select></div>
+        <div class="form-group"><label data-i18n="garment_type">Garment *</label>
+          <select class="form-control" id="o-garment">
+            <option>Shalwar Kameez</option><option>Shirt</option><option>Pant</option>
+            <option>Coat</option><option>Ladies Dress</option><option>Sherwani</option><option>Waistcoat</option>
+          </select>
+        </div>
+      </div>
+      <div class="g2 keep2">
+        <div class="form-group"><label data-i18n="fabric">Fabric</label><input class="form-control" type="text" id="o-fabric" placeholder="Lawn, Cotton, Silk..."/></div>
+        <div class="form-group"><label data-i18n="color">Color</label><input class="form-control" type="text" id="o-color" placeholder="White, Navy, Red..."/></div>
+      </div>
+      <div class="g3">
+        <div class="form-group"><label data-i18n="price">Price (₨) *</label><input class="form-control" type="number" id="o-price" placeholder="3500"/></div>
+        <div class="form-group"><label data-i18n="advance">Advance (₨)</label><input class="form-control" type="number" id="o-adv" placeholder="1000"/></div>
+        <div class="form-group"><label data-i18n="delivery_date">Delivery Date *</label><input class="form-control" type="date" id="o-del"/></div>
+      </div>
+      <div class="form-group"><label data-i18n="priority">Priority</label>
+        <select class="form-control" id="o-priority">
+          <option value="normal">Normal</option>
+          <option value="urgent">Urgent (+extra charge)</option>
+          <option value="vip">VIP Customer</option>
+        </select>
+      </div>
+      <div class="form-group"><label data-i18n="design_notes">Design Notes</label><textarea class="form-control" id="o-notes" placeholder="Collar style, embroidery, buttons..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-order')" data-i18n="cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="saveOrder()" data-i18n="place_order">Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW ORDER -->
+<div class="modal-overlay" id="modal-view-order">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-head-icon">📋</div>
+      <div class="modal-title" id="vo-title">Order Details</div>
+      <button class="modal-close" onclick="closeModal('modal-view-order')">✕</button>
+    </div>
+    <div class="modal-body" id="vo-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-view-order')" data-i18n="close">Close</button>
+      <button class="btn btn-wa" onclick="sendOrderWA()">📱 WhatsApp</button>
+      <button class="btn btn-primary" onclick="openInvoiceFromOrder()">🧾 <span data-i18n="invoice">Invoice</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE -->
+<div class="modal-overlay" id="modal-invoice">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-head-icon">🧾</div>
+      <div class="modal-title" data-i18n="invoice">Invoice</div>
+      <button class="modal-close" onclick="closeModal('modal-invoice')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="g2 keep2 mb-3">
+        <div class="form-group"><label data-i18n="customer">Customer</label><select class="form-control" id="inv-cust" onchange="filterInvOrds()"></select></div>
+        <div class="form-group"><label data-i18n="order">Order</label><select class="form-control" id="inv-ord" onchange="previewInvoice()"></select></div>
+      </div>
+      <div id="inv-preview"></div>
+      <div class="g2 keep2 mt-3">
+        <div class="form-group"><label data-i18n="send_via">Send Via</label>
+          <select class="form-control" id="inv-ch">
+            <option value="wa">WhatsApp</option>
+            <option value="webhook">SMS/Webhook</option>
+          </select>
+        </div>
+        <div class="form-group"><label data-i18n="custom_note">Custom Note</label><input class="form-control" type="text" id="inv-note" placeholder="Thank you!"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-invoice')" data-i18n="close">Close</button>
+      <button class="btn btn-ghost" onclick="printInvoice()">🖨️ <span data-i18n="print">Print</span></button>
+      <button class="btn btn-wa" onclick="sendInvoiceWA()">📱 WhatsApp</button>
+      <button class="btn btn-primary" onclick="dlInvoicePDF()">📄 PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ADD -->
+<div class="modal-overlay" id="modal-quick-add">
+  <div class="modal" style="max-width:340px">
+    <div class="modal-head">
+      <div class="modal-head-icon">⚡</div>
+      <div class="modal-title" data-i18n="quick_add">Quick Add</div>
+      <button class="modal-close" onclick="closeModal('modal-quick-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="qa-grid">
+        <button class="qa-btn" onclick="closeModal('modal-quick-add');openModal('modal-new-customer')">
+          <span class="qa-icon">👤</span><span class="qa-label" data-i18n="add_customer">Customer</span>
+        </button>
+        <button class="qa-btn" onclick="closeModal('modal-quick-add');openModal('modal-new-order')">
+          <span class="qa-icon">📋</span><span class="qa-label" data-i18n="new_order">Order</span>
+        </button>
+        <button class="qa-btn" onclick="closeModal('modal-quick-add');openModal('modal-measurement')">
+          <span class="qa-icon">📏</span><span class="qa-label" data-i18n="measure">Measure</span>
+        </button>
+        <button class="qa-btn" onclick="closeModal('modal-quick-add');openModal('modal-invoice')">
+          <span class="qa-icon">🧾</span><span class="qa-label" data-i18n="invoice">Invoice</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+/* ═════════════════════════════
+   TRANSLATIONS
+═════════════════════════════ */
+const T_MAP = {
+  en:{
+    main:'MAIN', business:'BUSINESS',
+    dashboard:'Dashboard', customers:'Customers', measurements:'Measurements',
+    orders:'Orders', billing:'Billing', reports:'Reports', settings:'Settings',
+    notifications:'Notifications', logout:'Logout', my_profile:'My Profile',
+    quick_add:'Quick Add', add_customer:'Add Customer', new_order:'New Order',
+    measure:'Measure', invoice:'Invoice', recent_orders:'Recent Orders',
+    view_all:'View All', quick_actions:'Quick Actions', today:"Today's Summary",
+    order:'Order', customer:'Customer', garment:'Garment', status:'Status',
+    delivery:'Delivery', price:'Price', paid:'Paid', balance:'Balance Due',
+    total:'Total', advance:'Advance', actions:'Actions', notes:'Notes',
+    full_name:'Full Name *', phone:'Phone *', address:'Address',
+    style_pref:'Style Preference', ref_by:'Referred By', email:'Email',
+    dob:'Date of Birth', tap_to_upload:'Tap to upload profile picture',
+    save_customer:'Save Customer', cancel:'Cancel', close:'Close',
+    add_measurement:'Add Measurement', garment_type:'Garment Type *',
+    unit:'Unit', date:'Date', custom_fields_lbl:'Custom Fields',
+    custom_hint:'Add extra measurements', field_name:'Field Name',
+    scope:'Scope', this_garment:'This Garment', all_garments:'All Garments',
+    add_field:'Add Field', save_measurement:'Save Measurement',
+    design_notes:'Design Notes', fabric:'Fabric', color:'Color',
+    delivery_date:'Delivery Date *', priority:'Priority', place_order:'Place Order',
+    send_via:'Send Via', custom_note:'Custom Note', pdf:'PDF', print:'Print',
+    report_filters:'Report Filters', generate:'Generate',
+    start_date:'Start Date', end_date:'End Date', quick_range:'Quick Range',
+    garment_filter:'Dress Category', status_filter:'Status',
+    customer_filter:'Customer', sales_chart:'Sales by Date',
+    cat_chart:'By Category', filtered_orders:'Filtered Orders',
+    shop_info:'Shop Info', messaging:'Messaging',
+    custom_fields:'Custom Fields', appearance:'Appearance', staff:'Staff',
+    payment_records:'Payment Records', new_invoice:'Invoice',
+    clear_all:'Clear All', delivery_today:'Deliveries Due Soon',
+    search_cust:'Search customers...', search_ord:'Search orders...',
+    search_meas:'Search measurements...', shop_name:'Shop Name',
+    shop_addr:'Address', shop_phone:'WhatsApp Number',
+    wa_greeting:'Default WhatsApp Message', webhook_url:'SMS Webhook URL',
+    save:'Save', language:'Language', theme:'Theme Color',
+    test_wa:'Test WhatsApp', fully_paid:'Fully Paid',
+    partial_paid:'Partial', unpaid:'Unpaid',
+    balance_due:'Balance Due', record_payment:'Record Payment',
+    total_sales:'Total Sales', total_orders:'Total Orders',
+    avg_order:'Avg. Order', due:'Balance Due',
+    staff_mgmt:'Staff Management', add_staff:'Add Staff Member',
+    staff_name:'Name', staff_role:'Role', staff_phone:'Phone',
+    measurements:'Measurements',
+  },
+  ur:{
+    main:'مینیو', business:'کاروبار',
+    dashboard:'ڈیش بورڈ', customers:'گاہک', measurements:'ناپ',
+    orders:'آرڈرز', billing:'ادائیگیاں', reports:'رپورٹس', settings:'سیٹنگز',
+    notifications:'اطلاعات', logout:'لاگ آؤٹ', my_profile:'میری پروفائل',
+    quick_add:'فوری اضافہ', add_customer:'گاہک شامل کریں', new_order:'نیا آرڈر',
+    measure:'ناپ', invoice:'انوائس', recent_orders:'حالیہ آرڈرز',
+    view_all:'سب دیکھیں', quick_actions:'فوری اعمال', today:'آج کا خلاصہ',
+    order:'آرڈر', customer:'گاہک', garment:'لباس', status:'حالت',
+    delivery:'ڈیلیوری', price:'قیمت', paid:'ادا شدہ', balance:'باقی',
+    total:'کل', advance:'ایڈوانس', actions:'اعمال', notes:'نوٹس',
+    full_name:'پورا نام *', phone:'فون *', address:'پتہ',
+    style_pref:'اسٹائل', ref_by:'کس نے بھیجا', email:'ای میل',
+    dob:'تاریخ پیدائش', tap_to_upload:'تصویر لگانے کے لیے ٹیپ کریں',
+    save_customer:'گاہک محفوظ کریں', cancel:'منسوخ', close:'بند کریں',
+    add_measurement:'ناپ شامل کریں', garment_type:'لباس کی قسم *',
+    unit:'اکائی', date:'تاریخ', custom_fields_lbl:'کسٹم فیلڈز',
+    custom_hint:'اضافی ناپ شامل کریں', field_name:'فیلڈ نام',
+    scope:'دائرہ', this_garment:'اس لباس پر', all_garments:'سب پر',
+    add_field:'فیلڈ شامل', save_measurement:'ناپ محفوظ کریں',
+    design_notes:'ڈیزائن نوٹس', fabric:'کپڑا', color:'رنگ',
+    delivery_date:'ڈیلیوری تاریخ *', priority:'ترجیح', place_order:'آرڈر دیں',
+    send_via:'ارسال کریں', custom_note:'کسٹم نوٹ', pdf:'پی ڈی ایف', print:'پرنٹ',
+    report_filters:'رپورٹ فلٹرز', generate:'بنائیں',
+    start_date:'شروع تاریخ', end_date:'ختم تاریخ', quick_range:'فوری رینج',
+    garment_filter:'لباس', status_filter:'حالت', customer_filter:'گاہک',
+    sales_chart:'تاریخ کے مطابق سیلز', cat_chart:'قسم کے مطابق',
+    filtered_orders:'فلٹر شدہ آرڈرز',
+    shop_info:'دکان کی معلومات', messaging:'میسجنگ',
+    custom_fields:'کسٹم فیلڈز', appearance:'ظاہری شکل', staff:'عملہ',
+    payment_records:'ادائیگی ریکارڈ', new_invoice:'انوائس',
+    clear_all:'سب صاف', delivery_today:'آنے والی ڈیلیوریاں',
+    search_cust:'گاہک تلاش...', search_ord:'آرڈر تلاش...',
+    search_meas:'ناپ تلاش...', shop_name:'دکان کا نام',
+    shop_addr:'پتہ', shop_phone:'واٹس ایپ نمبر',
+    wa_greeting:'واٹس ایپ پیغام', webhook_url:'ایس ایم ایس ویب ہک',
+    save:'محفوظ', language:'زبان', theme:'تھیم رنگ',
+    test_wa:'واٹس ایپ ٹیسٹ', fully_paid:'مکمل ادا',
+    partial_paid:'جزوی ادا', unpaid:'غیر ادا',
+    balance_due:'باقی رقم', record_payment:'ادائیگی درج کریں',
+    total_sales:'کل سیلز', total_orders:'کل آرڈرز',
+    avg_order:'اوسط آرڈر', due:'باقی رقم',
+    staff_mgmt:'عملہ انتظام', add_staff:'عملہ شامل کریں',
+    staff_name:'نام', staff_role:'کردار', staff_phone:'فون',
+    measurements:'ناپ',
+  }
+};
+
+/* ═════════════════════════════
+   MEASUREMENT ICONS & FIELDS
+═════════════════════════════ */
+const M_ICONS = {
+  Length:'↕️', Chest:'👕', Shoulder:'🔛', Sleeve:'💪', Neck:'🎽',
+  Waist:'⬤', Hip:'🔵', Ghera:'🔄', 'Pant Length':'📏', 'Pant Waist':'〰️',
+  'Pant Bottom':'⬇️', Cuff:'🔗', Thigh:'🦵', Knee:'🦿', Bottom:'⬇️',
+  Rise:'↑', Bust:'🔵', 'Front Daman':'▽', 'Back Daman':'△', 'Back Width':'⟺',
+  Armhole:'🕳️', 'Sleeve Opening':'〰️', Loosing:'➡️', 'Cuff Length':'📐',
+  'Cuff Width':'📐', 'Sleeve Length':'💪',
+};
+const M_UR = {
+  Length:'لمبائی', Chest:'چھاتی', Shoulder:'کندھا', Sleeve:'آستین',
+  Neck:'گلا', Waist:'کمر', Hip:'ہِپ', Ghera:'گھیرا',
+  'Pant Length':'پاجامہ لمبائی', 'Pant Waist':'پاجامہ کمر',
+  'Pant Bottom':'پاجامہ پائنچہ', Cuff:'کف', Thigh:'ران', Knee:'گھٹنا',
+  Bottom:'پائنچہ', Rise:'رائز', Bust:'بسٹ', 'Front Daman':'آگے دامن',
+  'Back Daman':'پیچھے دامن', 'Back Width':'پشت چوڑائی',
+  Armhole:'بغل', 'Sleeve Opening':'آستین کھلاؤ', Loosing:'ڈھیل',
+  'Cuff Length':'کف لمبائی', 'Cuff Width':'کف چوڑائی',
+  'Sleeve Length':'آستین لمبائی',
+};
+const STD_M = {
+  'Shalwar Kameez':['Length','Shoulder','Chest','Loosing','Neck','Armhole','Sleeve','Cuff Length','Cuff Width','Sleeve Opening','Pant Length','Pant Waist','Pant Bottom'],
+  'Shirt':['Length','Chest','Shoulder','Sleeve','Neck','Waist','Cuff'],
+  'Pant':['Waist','Hip','Thigh','Knee','Length','Bottom','Rise'],
+  'Coat':['Length','Chest','Shoulder','Sleeve','Waist','Back Width'],
+  'Ladies Dress':['Length','Bust','Waist','Hip','Shoulder','Sleeve','Neck','Front Daman','Back Daman'],
+  'Sherwani':['Length','Chest','Shoulder','Sleeve','Neck','Waist','Hip'],
+  'Waistcoat':['Length','Chest','Shoulder','Waist','Hip']
+};
+const STATUS_COLORS = {Received:'default',Cutting:'warning',Stitching:'info',Trial:'warning',Finishing:'info',Ready:'accent',Delivered:'success'};
+const STATUS_UR = {Received:'وصول',Cutting:'کٹنگ',Stitching:'سلائی',Trial:'ٹرائل',Finishing:'فنشنگ',Ready:'تیار',Delivered:'ڈیلیور'};
+const AV_COLORS=['#4A6741','#C0392B','#27AE60','#2980B9','#E67E22','#8E44AD','#16A085','#D35400'];
+
+/* ═════════════════════════════
+   APP STATE
+═════════════════════════════ */
+const S = {
+  lang: localStorage.getItem('sh_lang')||'en',
+  user: null,
+  currentPage:'dashboard',
+  currentOrderId:null,
+  currentCustId:null,
+  currentPicData:null,
+  customers:[],
+  orders:[],
+  measurements:[],
+  payments:[],
+  notifications:[],
+  staff:[],
+  settings:{
+    shopName:'StitchHub',
+    shopAddr:'Main Bazaar, Lahore',
+    shopPhone:'+923001234567',
+    waGreeting:'Assalam-o-Alaikum! Your order update from StitchHub ✂️',
+    webhookUrl:'',
+    accentColor:'#4A6741',
+  },
+  globalCF:[],
+};
+
+/* ═════════════════════════════
+   HELPERS
+═════════════════════════════ */
+const T=(k)=>(T_MAP[S.lang]||T_MAP.en)[k]||k;
+const fmt=(n)=>'₨'+Number(n||0).toLocaleString();
+const today=()=>new Date().toISOString().split('T')[0];
+const daysAgo=(d)=>{const dt=new Date();dt.setDate(dt.getDate()-d);return dt.toISOString().split('T')[0]};
+const randId=(p)=>p+(Date.now().toString(36)+Math.random().toString(36).slice(2,5)).toUpperCase();
+const slug=(s)=>s.trim().toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g,'_');
+const avColor=(n)=>AV_COLORS[(n||'?').charCodeAt(0)%AV_COLORS.length];
+const initials=(n)=>(n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const normPhone=(p)=>{let s=String(p||'').replace(/[^\d]/g,'');if(!s)return '';if(s.startsWith('0'))s='92'+s.slice(1);return s.startsWith('92')?s:'92'+s;};
+const totalPaid=(o)=>Number(o.advance||0)+(S.payments.filter(p=>p.orderId===o.id).reduce((a,p)=>a+p.amount,0));
+
+function statusBadge(st){
+  const c=STATUS_COLORS[st]||'default';
+  const lbl=S.lang==='ur'?(STATUS_UR[st]||st):st;
+  return `<span class="badge badge-${c}">${lbl}</span>`;
+}
+function payBadge(o){
+  const paid=totalPaid(o), bal=Number(o.price||0)-paid;
+  if(bal<=0) return `<span class="badge badge-success">${T('fully_paid')}</span>`;
+  if(paid>0) return `<span class="badge badge-warning">${T('partial_paid')}</span>`;
+  return `<span class="badge badge-danger">${T('unpaid')}</span>`;
+}
+
+/* ═════════════════════════════
+   TOAST
+═════════════════════════════ */
+function toast(msg, type='success'){
+  const w=document.getElementById('toast-wrap');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  const ic={success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};
+  el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
+  w.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},3000);
+}
+
+/* ═════════════════════════════
+   LOGIN
+═════════════════════════════ */
+function switchLoginTab(tab){
+  document.querySelectorAll('.login-tab').forEach((t,i)=>{
+    t.classList.toggle('active',i===(tab==='login'?0:1));
+  });
+  document.querySelectorAll('.login-form').forEach((f,i)=>{
+    f.classList.toggle('active',f.id===`ltab-${tab}`);
+  });
+}
+
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(!email||!pass){toast('Enter credentials','error');return;}
+  S.user={name:'Admin',shop:'StitchHub',phone:email,role:'Owner'};
+  enterApp();
+}
+
+function doRegister(){
+  const shop=document.getElementById('r-shop').value.trim();
+  const name=document.getElementById('r-name').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  if(!shop||!name||!phone||!pass){toast('Fill all fields','error');return;}
+  if(pass.length<6){toast('Password min 6 chars','error');return;}
+  S.user={name,shop,phone,role:'Owner'};
+  S.settings.shopName=shop;
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  document.getElementById('sb-uname').textContent=S.user.name;
+  document.getElementById('sb-shopname').textContent=S.user.shop||S.settings.shopName;
+  document.getElementById('sb-initials').textContent=initials(S.user.name);
+  seedData();
+  applyLang(S.lang);
+  showPage('dashboard');
+  addNotif('🎉 Welcome to StitchHub!','System');
+}
+
+function doLogout(){
+  S.user=null;
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  toast('Logged out successfully','info');
+}
+
+/* ═════════════════════════════
+   LANGUAGE  — FIX 5
+═════════════════════════════ */
+function applyLang(lang){
+  S.lang=lang;
+  localStorage.setItem('sh_lang',lang);
+  const isUr=lang==='ur';
+  document.documentElement.lang=isUr?'ur':'en';
+  document.documentElement.dir=isUr?'rtl':'ltr';
+
+  // Update button states with clear visual feedback
+  const enBtn=document.getElementById('lbtn-en');
+  const urBtn=document.getElementById('lbtn-ur');
+  if(enBtn){enBtn.classList.toggle('active',!isUr);}
+  if(urBtn){urBtn.classList.toggle('active',isUr);}
+
+  // Apply translations to all i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    const v=T(k);
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.placeholder=v;
+    else el.textContent=v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.placeholder=T(el.getAttribute('data-i18n-ph'));
+  });
+  renderPage(S.currentPage);
+}
+
+/* ═════════════════════════════
+   SIDEBAR
+═════════════════════════════ */
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+/* ═════════════════════════════
+   PAGE ROUTING
+═════════════════════════════ */
+const PAGE_TITLES={
+  dashboard:{en:'Dashboard',ur:'ڈیش بورڈ'},
+  customers:{en:'Customers',ur:'گاہک'},
+  measurements:{en:'Measurements',ur:'ناپ'},
+  orders:{en:'Orders',ur:'آرڈرز'},
+  billing:{en:'Billing & Payments',ur:'ادائیگیاں'},
+  reports:{en:'Sales Reports',ur:'رپورٹس'},
+  notifications:{en:'Notifications',ur:'اطلاعات'},
+  settings:{en:'Settings',ur:'سیٹنگز'},
+};
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(!pg) return;
+  pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')?.includes(`'${name}'`)) n.classList.add('active');
+  });
+  const titles=PAGE_TITLES[name]||{en:name,ur:name};
+  document.getElementById('hdr-title').textContent=titles[S.lang]||titles.en;
+  document.getElementById('hdr-sub').textContent=`StitchHub • ${new Date().toLocaleDateString(S.lang==='ur'?'ur-PK':'en-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}`;
+  S.currentPage=name;
+  renderPage(name);
+  closeSidebar();
+  window.scrollTo({top:0,behavior:'smooth'});
+  const pending=S.orders.filter(o=>o.status!=='Delivered').length;
+  document.getElementById('nb-orders').textContent=pending;
+}
+
+function renderPage(name){
+  if(name==='dashboard') renderDashboard();
+  else if(name==='customers') renderCustomers();
+  else if(name==='measurements') renderMeasurements();
+  else if(name==='orders') renderOrders();
+  else if(name==='billing') renderBilling();
+  else if(name==='reports') renderReports();
+  else if(name==='notifications') renderNotifications();
+  else if(name==='settings') renderSettings('shop');
+}
+
+/* ═════════════════════════════
+   MODALS
+═════════════════════════════ */
+function openModal(id){
+  document.getElementById(id).classList.add('show');
+  if(id==='modal-new-order'){fillOrderCusts();document.getElementById('o-del').value=daysAgo(-7);}
+  if(id==='modal-measurement'){fillMeasCusts();buildMeasFields();document.getElementById('m-date').value=today();}
+  if(id==='modal-invoice'){fillInvoiceDropdowns();setTimeout(()=>previewInvoice(),60);}
+}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+/* ═════════════════════════════
+   CUSTOMER PROFILE PIC
+═════════════════════════════ */
+function previewCustPic(input){
+  if(!input.files||!input.files[0]) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    S.currentPicData=e.target.result;
+    const prev=document.getElementById('c-pic-preview');
+    prev.style.background='none';
+    prev.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0"/>`;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+/* ═════════════════════════════
+   CUSTOMERS
+═════════════════════════════ */
+function saveCustomer(){
+  const name=document.getElementById('c-name').value.trim();
+  const phone=document.getElementById('c-phone').value.trim();
+  if(!name||!phone){toast(S.lang==='ur'?'نام اور فون ضروری':'Name & phone required','error');return;}
+  const c={
+    id:randId('C'), name, phone,
+    addr:document.getElementById('c-addr').value.trim(),
+    style:document.getElementById('c-style').value,
+    dob:document.getElementById('c-dob').value,
+    email:document.getElementById('c-email').value.trim(),
+    ref:document.getElementById('c-ref').value.trim(),
+    notes:document.getElementById('c-notes').value.trim(),
+    pic:S.currentPicData||null,
+    createdAt:today()
+  };
+  S.customers.unshift(c);
+  S.currentPicData=null;
+  ['c-name','c-phone','c-addr','c-email','c-ref','c-notes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('c-pic-preview').innerHTML='👤';
+  document.getElementById('c-pic-preview').style.background='var(--primary)';
+  closeModal('modal-new-customer');
+  renderCustomers();
+  addNotif(`New customer added: ${name}`,'Customer');
+  toast(S.lang==='ur'?'گاہک شامل ہوگیا':'Customer added ✓');
+}
+
+function renderCustomers(){
+  const q=(document.getElementById('cust-q')?.value||'').toLowerCase();
+  const sf=document.getElementById('cust-style-f')?.value||'';
+  const styles=[...new Set(S.customers.map(c=>c.style))];
+  const sfEl=document.getElementById('cust-style-f');
+  if(sfEl){const cur=sfEl.value;sfEl.innerHTML=`<option value="">All Styles</option>`+styles.map(s=>`<option value="${s}" ${s===cur?'selected':''}>${s}</option>`).join('');}
+  const list=S.customers.filter(c=>
+    (!q||c.name.toLowerCase().includes(q)||c.phone.includes(q)||(c.addr||'').toLowerCase().includes(q))&&
+    (!sf||c.style===sf)
+  );
+  const grid=document.getElementById('cust-grid');
+  if(!list.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="empty-icon">👥</span><p>${S.lang==='ur'?'کوئی گاہک نہیں':'No customers found'}</p><button class="btn btn-primary" onclick="openModal('modal-new-customer')">+ ${T('add_customer')}</button></div>`;
+    return;
+  }
+  grid.innerHTML=list.map(c=>{
+    const ords=S.orders.filter(o=>o.custId===c.id).length;
+    const avHtml=c.pic?`<img src="${c.pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`:`<span>${initials(c.name)}</span>`;
+    return `<div class="cust-card" onclick="viewCustomer('${c.id}')">
+      <div class="avatar av-md" style="background:${avColor(c.name)}">${avHtml}</div>
+      <div class="cust-info">
+        <div class="cust-name">${c.name}</div>
+        <div class="cust-phone">📱 ${c.phone}</div>
+        <div class="cust-tags">
+          <span class="tag">${c.style}</span>
+          <span class="tag" style="background:var(--accent-light);color:#8a6010">${ords} orders</span>
+        </div>
+      </div>
+      <button class="btn btn-wa btn-icon" onclick="event.stopPropagation();waMsg('${c.phone}','${S.settings.waGreeting} ${c.name}')">📱</button>
+    </div>`;
+  }).join('');
+}
+
+function viewCustomer(id){
+  const c=S.customers.find(x=>x.id===id);
+  if(!c) return;
+  S.currentCustId=id;
+  const ords=S.orders.filter(o=>o.custId===id);
+  const meas=S.measurements.filter(m=>m.custId===id);
+  const spent=ords.reduce((s,o)=>s+Number(o.price||0),0);
+  const avHtml=c.pic?`<img src="${c.pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`:`<span>${initials(c.name)}</span>`;
+  document.getElementById('vc-title').textContent=c.name;
+  document.getElementById('vc-body').innerHTML=`
+    <div id="cust-pdf-area">
+      <div style="display:flex;align-items:center;gap:16px;padding:16px;background:linear-gradient(135deg,var(--primary-light),#fff);border-radius:12px;margin-bottom:16px">
+        <div class="avatar av-xl" style="background:${avColor(c.name)};border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.12)">${avHtml}</div>
+        <div>
+          <div style="font-size:20px;font-weight:800">${c.name}</div>
+          <div style="color:var(--text-light);margin-top:4px">📱 ${c.phone}</div>
+          ${c.email?`<div style="color:var(--text-light);font-size:12px">✉️ ${c.email}</div>`:''}
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="tag">${c.style}</span>
+            ${c.dob?`<span class="tag" style="background:var(--accent-light);color:#8a6010">🎂 ${c.dob}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="g4 mb-4" style="gap:10px">
+        ${[[ords.length,T('total_orders'),'#4A6741'],[fmt(spent),T('total_sales'),'#E67E22'],[meas.length,T('measurements'),'#2980B9'],[ords.filter(o=>o.status==='Delivered').length,'Delivered','#27AE60']].map(([v,l,c2])=>`
+          <div style="background:${c2}15;border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:20px;font-weight:800;color:${c2}">${v}</div>
+            <div style="font-size:10px;color:var(--text-light);margin-top:3px">${l}</div>
+          </div>`).join('')}
+      </div>
+      ${c.addr?`<p style="margin-bottom:8px;font-size:13px">📍 ${c.addr}</p>`:''}
+      ${c.ref?`<p style="margin-bottom:8px;font-size:13px;color:var(--text-light)">Referred by: ${c.ref}</p>`:''}
+      ${c.notes?`<div style="background:var(--accent-light);border-radius:8px;padding:10px;font-size:12px;margin-bottom:12px">📝 ${c.notes}</div>`:''}
+      <hr class="divider"/>
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px">📋 ${T('orders')}</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>ID</th><th>${T('garment')}</th><th>${T('price')}</th><th>${T('status')}</th></tr></thead>
+        <tbody>${ords.map(o=>`<tr class="clickable-row" onclick="closeModal('modal-view-customer');viewOrder('${o.id}')"><td><strong>${o.id}</strong></td><td>${o.garment}</td><td>${fmt(o.price)}</td><td>${statusBadge(o.status)}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:16px">No orders</td></tr>'}</tbody>
+      </table></div>
+      ${meas.length?`
+        <hr class="divider"/>
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">📏 ${T('measurements')}</div>
+        ${meas.map(m=>`
+          <div style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+              <span class="tag">${m.garment}</span>
+              <span style="font-size:11px;color:var(--text-muted)">${m.unit} • ${m.date}</span>
+            </div>
+            <div class="meas-grid">
+              ${Object.keys(m.fields||{}).map(k=>`
+                <div class="meas-field">
+                  <div class="mf-icon">${M_ICONS[k]||'📐'}</div>
+                  <div class="mf-val">${m.fields[k]}</div>
+                  <div class="mf-lbl">${S.lang==='ur'?(M_UR[k]||k):k}</div>
+                </div>`).join('')}
+            </div>
+          </div>`).join('')}`:''}
+    </div>`;
+  openModal('modal-view-customer');
+}
+
+function dlCustPDF(){
+  const el=document.getElementById('cust-pdf-area');
+  if(!el){toast('Nothing to export','error');return;}
+  const c=S.customers.find(x=>x.id===S.currentCustId);
+  html2pdf().set({margin:.3,filename:`customer-${c?.id||'profile'}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}}).from(el).save();
+}
+
+function sendCustomerWA(){
+  const c=S.customers.find(x=>x.id===S.currentCustId);
+  if(!c) return;
+  const msg=`${S.settings.waGreeting}\n${S.lang==='ur'?'گاہک':'Customer'}: ${c.name}\n${S.lang==='ur'?'آرڈرز':'Orders'}: ${S.orders.filter(o=>o.custId===c.id).length}\n– ${S.settings.shopName}`;
+  waMsg(c.phone,msg);
+}
+
+/* ═════════════════════════════
+   MEASUREMENTS
+═════════════════════════════ */
+function fillMeasCusts(){
+  const sel=document.getElementById('m-cust');
+  sel.innerHTML=`<option value="">${S.lang==='ur'?'گاہک منتخب کریں':'Select Customer'}</option>`+
+    S.customers.map(c=>`<option value="${c.id}">${c.name} – ${c.phone}</option>`).join('');
+  if(S.currentCustId) sel.value=S.currentCustId;
+}
+
+function getCF(garment){
+  const stored=JSON.parse(localStorage.getItem('sh_cf')||'{}');
+  return [...(S.globalCF||[]),...(stored[garment]||[]).filter(f=>!(S.globalCF||[]).find(g=>g.slug===f.slug))];
+}
+
+function buildMeasFields(){
+  const g=document.getElementById('m-garment')?.value;
+  const u=document.getElementById('m-unit')?.value||'inches';
+  if(!g) return;
+  const fields=STD_M[g]||[];
+  document.getElementById('meas-fields').innerHTML=fields.map(f=>`
+    <div class="meas-field">
+      <div class="mf-icon">${M_ICONS[f]||'📐'}</div>
+      <input class="mf-val" type="number" id="mf-${slug(f)}" step="0.5" min="0" placeholder="0"/>
+      <div class="mf-lbl">${S.lang==='ur'?(M_UR[f]||f):f} <span style="font-size:8px;opacity:.6">${u}</span></div>
+    </div>`).join('');
+  renderCFChips();renderCFInputs();
+}
+
+function addCF(){
+  const name=document.getElementById('cf-name').value.trim();
+  const unit=document.getElementById('cf-unit').value.trim()||'inches';
+  const scope=document.getElementById('cf-scope').value;
+  const garment=document.getElementById('m-garment').value;
+  if(!name){toast('Field name required','error');return;}
+  const s=slug(name);
+  const f={name,slug:s,unit};
+  if(scope==='global'){
+    if(!(S.globalCF||[]).find(x=>x.slug===s)){(S.globalCF=S.globalCF||[]).push(f);}
+  } else {
+    const stored=JSON.parse(localStorage.getItem('sh_cf')||'{}');
+    stored[garment]=stored[garment]||[];
+    if(!stored[garment].find(x=>x.slug===s)){stored[garment].push(f);localStorage.setItem('sh_cf',JSON.stringify(stored));}
+  }
+  document.getElementById('cf-name').value='';
+  renderCFChips();renderCFInputs();
+  toast('Field added ✓');
+}
+
+function renderCFChips(){
+  const g=document.getElementById('m-garment')?.value;
+  if(!g) return;
+  const cfs=getCF(g);
+  const row=document.getElementById('cf-chips');
+  if(!row) return;
+  row.innerHTML=cfs.map(f=>`<span class="chip">${f.name} (${f.unit})<button class="chip-x" onclick="removeCF('${f.slug}','${g}')">×</button></span>`).join('');
+}
+
+function removeCF(s,g){
+  S.globalCF=(S.globalCF||[]).filter(f=>f.slug!==s);
+  const stored=JSON.parse(localStorage.getItem('sh_cf')||'{}');
+  if(stored[g]) stored[g]=stored[g].filter(f=>f.slug!==s);
+  localStorage.setItem('sh_cf',JSON.stringify(stored));
+  renderCFChips();renderCFInputs();
+}
+
+function renderCFInputs(){
+  const g=document.getElementById('m-garment')?.value;
+  if(!g) return;
+  const u=document.getElementById('m-unit')?.value||'inches';
+  const cfs=getCF(g);
+  const el=document.getElementById('cf-inputs');
+  if(!el) return;
+  el.innerHTML=cfs.map(f=>`
+    <div class="meas-field">
+      <div class="mf-icon">📐</div>
+      <input class="mf-val" type="number" id="cf-i-${f.slug}" step="0.5" min="0" placeholder="0"/>
+      <div class="mf-lbl">${f.name} <span style="font-size:8px;opacity:.6">${f.unit}</span></div>
+    </div>`).join('');
+}
+
+function saveMeasurement(){
+  const custId=document.getElementById('m-cust').value;
+  const garment=document.getElementById('m-garment').value;
+  const unit=document.getElementById('m-unit').value;
+  if(!custId){toast(S.lang==='ur'?'گاہک منتخب کریں':'Select a customer','error');return;}
+  const cust=S.customers.find(c=>c.id===custId);
+  const fields={};
+  (STD_M[garment]||[]).forEach(f=>{
+    const el=document.getElementById('mf-'+slug(f));
+    if(el&&el.value!=='') fields[f]=parseFloat(el.value)||0;
+  });
+  getCF(garment).forEach(f=>{
+    const el=document.getElementById('cf-i-'+f.slug);
+    if(el&&el.value!=='') fields[f.name]=parseFloat(el.value)||0;
+  });
+  const m={id:randId('M'),custId,custName:cust.name,garment,unit,fields,
+    notes:document.getElementById('m-notes').value.trim(),
+    date:document.getElementById('m-date').value||today()};
+  S.measurements.unshift(m);
+  closeModal('modal-measurement');
+  renderMeasurements();
+  toast(S.lang==='ur'?'ناپ محفوظ ہوگئی':'Measurement saved ✓');
+}
+
+function renderMeasurements(){
+  const q=(document.getElementById('meas-q')?.value||'').toLowerCase();
+  const gf=document.getElementById('meas-gf')?.value||'';
+  const garments=[...new Set(S.measurements.map(m=>m.garment))];
+  const gEl=document.getElementById('meas-gf');
+  if(gEl){const cur=gEl.value;gEl.innerHTML=`<option value="">All Garments</option>`+garments.map(g=>`<option value="${g}" ${g===cur?'selected':''}>${g}</option>`).join('');}
+  let list=S.measurements.filter(m=>
+    (!q||m.custName.toLowerCase().includes(q)||m.garment.toLowerCase().includes(q))&&
+    (!gf||m.garment===gf)
+  );
+  const el=document.getElementById('meas-container');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><span class="empty-icon">📏</span><p>${S.lang==='ur'?'ابھی کوئی ناپ نہیں':'No measurements yet'}</p><button class="btn btn-primary" onclick="openModal('modal-measurement')">+ ${T('add_measurement')}</button></div>`;
+    return;
+  }
+  const grouped={};
+  list.forEach(m=>{if(!grouped[m.custName])grouped[m.custName]=[];grouped[m.custName].push(m);});
+  el.innerHTML=Object.entries(grouped).map(([name,profs])=>`
+    <div class="card mb-4">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar av-sm" style="background:${avColor(name)}">${initials(name)}</div>
+          <div class="card-title">${name}</div>
+        </div>
+        <span class="badge badge-primary">${profs.length} ${S.lang==='ur'?'ناپ':'profiles'}</span>
+      </div>
+      <div class="card-body">
+        ${profs.map((m,i)=>`
+          ${i>0?'<hr class="divider"/>':''}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+            <span class="tag">${m.garment}</span>
+            <span style="font-size:11px;color:var(--text-muted)">${m.unit} • ${m.date}</span>
+            ${m.notes?`<span style="font-size:11px;color:var(--text-light)">📝 ${m.notes}</span>`:''}
+          </div>
+          <div class="meas-grid">
+            ${Object.keys(m.fields||{}).map(k=>`
+              <div class="meas-field">
+                <div class="mf-icon">${M_ICONS[k]||'📐'}</div>
+                <div class="mf-val" style="font-size:18px;line-height:1.2">${m.fields[k]}</div>
+                <div class="mf-lbl">${S.lang==='ur'?(M_UR[k]||k):k}</div>
+              </div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+/* ═════════════════════════════
+   ORDERS
+═════════════════════════════ */
+function fillOrderCusts(){
+  const sel=document.getElementById('o-cust');
+  sel.innerHTML=`<option value="">${S.lang==='ur'?'گاہک منتخب کریں':'Select Customer'}</option>`+
+    S.customers.map(c=>`<option value="${c.id}">${c.name} – ${c.phone}</option>`).join('');
+}
+
+function saveOrder(){
+  const custId=document.getElementById('o-cust').value;
+  const price=parseFloat(document.getElementById('o-price').value)||0;
+  const del=document.getElementById('o-del').value;
+  if(!custId||!price||!del){toast(S.lang==='ur'?'ضروری فیلڈز پُر کریں':'Fill required fields','error');return;}
+  const cust=S.customers.find(c=>c.id===custId);
+  const o={
+    id:randId('ORD'), custId, custName:cust.name, custPhone:cust.phone,
+    garment:document.getElementById('o-garment').value,
+    fabric:document.getElementById('o-fabric').value.trim(),
+    color:document.getElementById('o-color').value.trim(),
+    price, advance:parseFloat(document.getElementById('o-adv').value)||0,
+    priority:document.getElementById('o-priority').value,
+    deliveryDate:del, status:'Received',
+    notes:document.getElementById('o-notes').value.trim(),
+    orderDate:today()
+  };
+  S.orders.unshift(o);
+  ['o-price','o-adv','o-fabric','o-color','o-notes'].forEach(i=>document.getElementById(i).value='');
+  closeModal('modal-new-order');
+  renderOrders();renderDashboard();
+  addNotif(`New order: ${o.id} – ${cust.name} – ${o.garment}`,'Order');
+  toast(S.lang==='ur'?'آرڈر محفوظ ہوگیا':'Order placed ✓');
+}
+
+function renderOrders(){
+  const q=(document.getElementById('ord-q')?.value||'').toLowerCase();
+  const sf=document.getElementById('ord-sf')?.value||'';
+  const gf=document.getElementById('ord-gf')?.value||'';
+  const statuses=[...new Set(S.orders.map(o=>o.status))];
+  const sfEl=document.getElementById('ord-sf');
+  if(sfEl){const cur=sfEl.value;sfEl.innerHTML=`<option value="">All Status</option>`+statuses.map(s=>`<option value="${s}" ${s===cur?'selected':''}>${S.lang==='ur'?(STATUS_UR[s]||s):s}</option>`).join('');}
+  const garments=[...new Set(S.orders.map(o=>o.garment))];
+  const gfEl=document.getElementById('ord-gf');
+  if(gfEl){const cur=gfEl.value;gfEl.innerHTML=`<option value="">All Garments</option>`+garments.map(g=>`<option value="${g}" ${g===cur?'selected':''}>${g}</option>`).join('');}
+  const list=S.orders.filter(o=>
+    (!q||o.custName.toLowerCase().includes(q)||o.id.toLowerCase().includes(q))&&
+    (!sf||o.status===sf)&&(!gf||o.garment===gf)
+  );
+  const body=document.getElementById('ord-body');
+  if(!list.length){body.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">${S.lang==='ur'?'کوئی آرڈر نہیں':'No orders found'}</td></tr>`;return;}
+  body.innerHTML=list.map(o=>{
+    const isUrgent=o.priority==='urgent'||o.priority==='vip';
+    return `<tr>
+      <td><strong>${o.id}</strong>${isUrgent?`<span class="badge badge-danger" style="margin-left:4px;font-size:9px">${o.priority.toUpperCase()}</span>`:''}</td>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        ${S.customers.find(c=>c.id===o.custId)?.pic?`<div class="avatar av-sm"><img src="${S.customers.find(c=>c.id===o.custId).pic}"/></div>`:`<div class="avatar av-sm" style="background:${avColor(o.custName)}">${initials(o.custName)}</div>`}
+        ${o.custName}
+      </div></td>
+      <td>${o.garment}${o.fabric?`<div style="font-size:10px;color:var(--text-muted)">${o.fabric}${o.color?` / ${o.color}`:''}</div>`:''}</td>
+      <td><span style="color:${o.deliveryDate<today()&&o.status!=='Delivered'?'var(--danger)':'inherit'}">${o.deliveryDate}</span></td>
+      <td>${fmt(o.price)}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-outline" onclick="viewOrder('${o.id}')">👁</button>
+        <button class="btn btn-sm btn-wa" onclick="sendOrderWADirect('${o.id}')">📱</button>
+        <select class="btn btn-sm btn-ghost" onchange="updateStatus('${o.id}',this.value)" style="font-size:11px;padding:4px 8px;min-width:80px">
+          ${['Received','Cutting','Stitching','Trial','Finishing','Ready','Delivered'].map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${S.lang==='ur'?(STATUS_UR[s]||s):s}</option>`).join('')}
+        </select>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStatus(id,status){
+  const o=S.orders.find(x=>x.id===id);
+  if(o){o.status=status;renderOrders();renderDashboard();
+    if(status==='Ready')addNotif(`Order ${id} is READY for pickup!`,'Order');
+    toast(S.lang==='ur'?'اسٹیٹس اپڈیٹ':'Status updated ✓');
+  }
+}
+
+function viewOrder(id){
+  const o=S.orders.find(x=>x.id===id);
+  if(!o) return;
+  S.currentOrderId=id;
+  const paid=totalPaid(o), bal=Number(o.price||0)-paid;
+  const steps=['Received','Cutting','Stitching','Trial','Finishing','Ready','Delivered'];
+  const cur=steps.indexOf(o.status);
+  document.getElementById('vo-title').textContent=o.id;
+  document.getElementById('vo-body').innerHTML=`
+    <div class="order-steps mb-4">
+      ${steps.map((s,i)=>`<div class="ostep ${i<cur?'done':i===cur?'active':''}">
+        <div class="ostep-dot">${i<cur?'✓':(i+1)}</div>
+        <div class="ostep-lbl">${S.lang==='ur'?(STATUS_UR[s]||s):s}</div>
+      </div>`).join('')}
+    </div>
+    <div class="g2">
+      <div>
+        <p style="margin-bottom:8px"><strong>${T('customer')}:</strong> <a href="#" onclick="closeModal('modal-view-order');viewCustomer('${o.custId}')" style="color:var(--primary);text-decoration:underline">${o.custName}</a></p>
+        <p style="margin-bottom:8px"><strong>${T('phone')}:</strong> ${o.custPhone||'—'}</p>
+        <p style="margin-bottom:8px"><strong>${T('garment')}:</strong> ${o.garment}</p>
+        <p style="margin-bottom:8px"><strong>${T('fabric')}:</strong> ${o.fabric||'—'}${o.color?` / ${o.color}`:''}</p>
+        <p style="margin-bottom:8px"><strong>Order Date:</strong> ${o.orderDate}</p>
+        <p style="margin-bottom:8px"><strong>${T('delivery')}:</strong> <span style="color:${o.deliveryDate<today()&&o.status!=='Delivered'?'var(--danger)':'inherit'}">${o.deliveryDate}</span></p>
+        ${o.priority!=='normal'?`<span class="badge badge-danger">${o.priority.toUpperCase()}</span>`:''}
+        ${o.notes?`<div style="background:var(--accent-light);border-radius:8px;padding:10px;margin-top:10px;font-size:12px">📝 ${o.notes}</div>`:''}
+      </div>
+      <div>
+        <div style="background:var(--bg);border-radius:12px;padding:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>${T('price')}</span><strong>${fmt(o.price)}</strong></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;color:var(--success)"><span>${T('advance')}</span><strong>${fmt(o.advance)}</strong></div>
+          ${S.payments.filter(p=>p.orderId===id).map(p=>`<div style="display:flex;justify-content:space-between;margin-bottom:8px;color:var(--success)"><span>+ ${p.date}</span><strong>${fmt(p.amount)}</strong></div>`).join('')}
+          <div style="display:flex;justify-content:space-between;font-size:17px;font-weight:800;color:${bal<=0?'var(--success)':'var(--danger)'};border-top:2px solid var(--border);padding-top:10px;margin-top:8px">
+            <span>${T('balance_due')}</span><strong>${fmt(bal)}</strong>
+          </div>
+        </div>
+        ${bal>0?`<div class="mt-3">
+          <div class="form-group" style="margin-bottom:6px"><label>${T('record_payment')}</label>
+            <input class="form-control" type="number" id="pay-${id}" placeholder="₨ amount"/>
+          </div>
+          <button class="btn btn-success btn-sm" onclick="recordPayment('${id}')">${T('record_payment')}</button>
+        </div>`:`<div style="text-align:center;padding:16px;color:var(--success);font-weight:700;font-size:16px">✅ ${T('fully_paid')}</div>`}
+      </div>
+    </div>`;
+  openModal('modal-view-order');
+}
+
+function recordPayment(orderId){
+  const el=document.getElementById('pay-'+orderId);
+  const amount=parseFloat(el?.value)||0;
+  if(!amount||amount<=0){toast('Enter valid amount','error');return;}
+  S.payments.push({id:randId('P'),orderId,amount,date:today()});
+  toast(S.lang==='ur'?'ادائیگی ریکارڈ ہوگئی':'Payment recorded ✓');
+  closeModal('modal-view-order');
+  renderBilling();
+}
+
+function sendOrderWA(){
+  const o=S.orders.find(x=>x.id===S.currentOrderId);
+  if(!o) return;
+  sendOrderWADirect(o.id);
+}
+
+function sendOrderWADirect(id){
+  const o=S.orders.find(x=>x.id===id);
+  if(!o) return;
+  const bal=Number(o.price||0)-totalPaid(o);
+  const msg=S.lang==='ur'
+    ?`السلام علیکم ${o.custName}! ✂️\nآرڈر: ${o.id} | ${o.garment}\nحالت: ${STATUS_UR[o.status]||o.status}\nڈیلیوری: ${o.deliveryDate}\nباقی رقم: ${fmt(bal)}\n– ${S.settings.shopName}`
+    :`Hi ${o.custName}! ✂️\nOrder: ${o.id} | ${o.garment}\nStatus: ${o.status}\nDelivery: ${o.deliveryDate}\nBalance: ${fmt(bal)}\n– ${S.settings.shopName}`;
+  waMsg(o.custPhone,msg);
+}
+
+function openInvoiceFromOrder(){
+  closeModal('modal-view-order');
+  openModal('modal-invoice');
+  setTimeout(()=>{
+    const o=S.orders.find(x=>x.id===S.currentOrderId);
+    if(o){
+      document.getElementById('inv-cust').value=o.custId;
+      filterInvOrds();
+      setTimeout(()=>{document.getElementById('inv-ord').value=S.currentOrderId;previewInvoice();},60);
+    }
+  },100);
+}
+
+/* ═════════════════════════════
+   BILLING
+═════════════════════════════ */
+function renderBilling(){
+  const flt=document.getElementById('bill-f')?.value||'all';
+  const orders=S.orders.filter(o=>{
+    const paid=totalPaid(o), bal=Number(o.price||0)-paid;
+    if(flt==='unpaid') return paid===0;
+    if(flt==='partial') return paid>0&&bal>0;
+    if(flt==='paid') return bal<=0;
+    return true;
+  });
+  const totSales=S.orders.reduce((s,o)=>s+Number(o.price||0),0);
+  const totPaid=S.orders.reduce((s,o)=>s+totalPaid(o),0);
+  const totBal=totSales-totPaid;
+  const kpis=document.getElementById('bill-kpis');
+  if(kpis) kpis.innerHTML=[
+    ['💰',S.lang==='ur'?'کل سیلز':T('total_sales'),fmt(totSales),'#4A6741'],
+    ['✅',S.lang==='ur'?'وصول شدہ':T('paid'),fmt(totPaid),'#27AE60'],
+    ['⚠️',T('balance_due'),fmt(totBal),'#C0392B'],
+    ['📋',T('total_orders'),S.orders.length,'#2980B9'],
+  ].map(([ic,lb,v,bg])=>`<div class="kpi-card"><div class="kpi-icon-wrap" style="background:${bg}18;color:${bg}">${ic}</div><div class="kpi-text"><div class="kpi-val" style="color:${bg}">${v}</div><div class="kpi-lbl">${lb}</div></div></div>`).join('');
+  const body=document.getElementById('bill-body');
+  if(!body) return;
+  if(!orders.length){body.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-muted)">No records</td></tr>`;return;}
+  body.innerHTML=orders.map(o=>{
+    const paid=totalPaid(o), bal=Number(o.price||0)-paid;
+    return `<tr>
+      <td><strong>${o.id}</strong></td>
+      <td><a href="#" onclick="viewCustomer('${o.custId}')" style="color:var(--primary);font-weight:600">${o.custName}</a></td>
+      <td>${o.garment}</td>
+      <td>${fmt(o.price)}</td>
+      <td style="color:var(--success)">${fmt(paid)}</td>
+      <td style="color:${bal>0?'var(--danger)':'var(--success)'}"><strong>${fmt(bal)}</strong></td>
+      <td>${payBadge(o)}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-sm btn-primary" onclick="openInvoiceFor('${o.custId}','${o.id}')">🧾</button>
+        ${bal>0?`<button class="btn btn-sm btn-success" onclick="viewOrder('${o.id}')">💵</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function openInvoiceFor(custId,ordId){
+  openModal('modal-invoice');
+  setTimeout(()=>{
+    document.getElementById('inv-cust').value=custId;
+    filterInvOrds();
+    setTimeout(()=>{document.getElementById('inv-ord').value=ordId;previewInvoice();},60);
+  },100);
+}
+
+/* ═════════════════════════════
+   INVOICE
+═════════════════════════════ */
+function fillInvoiceDropdowns(){
+  const cs=document.getElementById('inv-cust');
+  cs.innerHTML=`<option value="">Select...</option>`+S.customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  filterInvOrds();
+}
+function filterInvOrds(){
+  const cid=document.getElementById('inv-cust').value;
+  const ords=cid?S.orders.filter(o=>o.custId===cid):S.orders;
+  const os=document.getElementById('inv-ord');
+  os.innerHTML=`<option value="">Select order...</option>`+ords.map(o=>`<option value="${o.id}">${o.id} – ${o.garment}</option>`).join('');
+  document.getElementById('inv-preview').innerHTML='';
+}
+function previewInvoice(){
+  const oid=document.getElementById('inv-ord').value;
+  const prev=document.getElementById('inv-preview');
+  if(!oid){prev.innerHTML='';return;}
+  const o=S.orders.find(x=>x.id===oid);
+  if(!o){prev.innerHTML='';return;}
+  const c=S.customers.find(x=>x.id===o.custId)||{};
+  const paid=totalPaid(o), bal=Number(o.price||0)-paid;
+  prev.innerHTML=`<div id="inv-pdf-area" class="inv-box mt-3">
+    <div class="inv-head">
+      <div>
+        <div style="font-size:22px;font-weight:800">✂️ ${S.settings.shopName}</div>
+        <div style="font-size:12px;opacity:.8;margin-top:4px">📍 ${S.settings.shopAddr}</div>
+        <div style="font-size:12px;opacity:.8">📱 ${S.settings.shopPhone}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:24px;font-weight:800">INVOICE</div>
+        <div style="font-size:14px;opacity:.85;margin-top:4px">${o.id}</div>
+        <div style="font-size:12px;opacity:.7">${o.orderDate}</div>
+        ${payBadge(o)}
+      </div>
+    </div>
+    <div class="inv-meta">
+      <div class="inv-meta-box"><strong>${T('customer')}</strong>${c.name||o.custName}<br>${c.phone||'—'}<br>${c.addr||'—'}</div>
+      <div class="inv-meta-box"><strong>Order Details</strong>${T('garment')}: ${o.garment}<br>${T('fabric')}: ${o.fabric||'—'}<br>${T('delivery')}: ${o.deliveryDate}<br>${T('status')}: ${o.status}</div>
+    </div>
+    <div style="padding:0 24px 16px">
+      <table class="inv-tbl">
+        <thead><tr><th>#</th><th>${T('garment')}</th>${o.color?`<th>${T('color')}</th>`:''}<th style="text-align:right">${T('price')}</th></tr></thead>
+        <tbody><tr><td>1</td><td>${o.garment}${o.fabric?`<div style="font-size:10px;color:var(--text-muted)">${o.fabric}</div>`:''}</td>${o.color?`<td>${o.color}</td>`:''}<td style="text-align:right">${fmt(o.price)}</td></tr></tbody>
+      </table>
+    </div>
+    <div class="inv-totals">
+      <div class="inv-row"><span>${T('price')}</span><span>${fmt(o.price)}</span></div>
+      <div class="inv-row" style="color:var(--success)"><span>${T('advance')}</span><span>– ${fmt(o.advance)}</span></div>
+      ${S.payments.filter(p=>p.orderId===oid).map(p=>`<div class="inv-row" style="color:var(--success)"><span>Payment ${p.date}</span><span>– ${fmt(p.amount)}</span></div>`).join('')}
+      <div class="inv-row grand"><span>${T('balance_due')}</span><span style="color:${bal<=0?'var(--success)':'var(--danger)'}">${fmt(bal)}</span></div>
+    </div>
+    <div style="padding:12px 24px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border);text-align:center">${S.settings.waGreeting}</div>
+  </div>`;
+}
+
+function dlInvoicePDF(){
+  const el=document.getElementById('inv-pdf-area');
+  if(!el){toast('Select an order first','error');return;}
+  const oid=document.getElementById('inv-ord').value;
+  html2pdf().set({margin:.25,filename:`invoice-${oid}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}}).from(el).save();
+}
+
+function printInvoice(){
+  const el=document.getElementById('inv-pdf-area');
+  if(!el){toast('Select an order first','error');return;}
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Invoice – ${S.settings.shopName}</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:20px;}.inv-head{background:#4A6741;color:#fff;padding:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}.inv-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;background:#f0f4ef;}.inv-meta-box{background:#fff;padding:12px;border-radius:8px;font-size:12px;line-height:1.8;}.inv-tbl{width:calc(100% - 48px);margin:0 24px 16px;border-collapse:collapse;}.inv-tbl th,.inv-tbl td{padding:8px;border-bottom:1px solid #ddd;}.inv-totals{padding:14px 24px;}.inv-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;}.inv-row.grand{font-size:16px;font-weight:800;border-top:2px solid #ddd;margin-top:8px;padding-top:10px;}.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}.badge-success{background:#d5f5e3;color:#1a7a42;}.badge-danger{background:#fad7d3;color:#922b21;}.badge-warning{background:#fdecd0;color:#b7610e;}</style></head><body>${el.outerHTML}</body></html>`);
+  w.document.close();setTimeout(()=>w.print(),400);
+}
+
+function sendInvoiceWA(){
+  const oid=document.getElementById('inv-ord').value;
+  if(!oid){toast('Select an order first','error');return;}
+  const o=S.orders.find(x=>x.id===oid);
+  if(!o) return;
+  const bal=Number(o.price||0)-totalPaid(o);
+  const note=document.getElementById('inv-note').value;
+  const ch=document.getElementById('inv-ch').value;
+  const msg=S.lang==='ur'
+    ?`🧾 انوائس – ${S.settings.shopName}\nگاہک: ${o.custName}\nآرڈر: ${o.id} | ${o.garment}\nکل: ${fmt(o.price)} | باقی: ${fmt(bal)}${note?`\n${note}`:''}`
+    :`🧾 Invoice – ${S.settings.shopName}\nCustomer: ${o.custName}\nOrder: ${o.id} | ${o.garment}\nTotal: ${fmt(o.price)} | Balance: ${fmt(bal)}${note?`\n${note}`:''}`;
+  if(ch==='webhook'&&S.settings.webhookUrl){sendWebhook(o.custPhone,msg);}
+  else{waMsg(o.custPhone,msg);}
+}
+
+/* ═════════════════════════════
+   WHATSAPP / WEBHOOK
+═════════════════════════════ */
+function waMsg(phone,message){
+  const p=normPhone(phone);
+  if(!p){toast('Phone not available','error');return;}
+  window.open(`https://wa.me/${p}?text=${encodeURIComponent(message)}`,'_blank');
+  toast(S.lang==='ur'?'واٹس ایپ کھل رہا ہے':'Opening WhatsApp...');
+}
+
+async function sendWebhook(phone,message){
+  if(!S.settings.webhookUrl){waMsg(phone,message);return;}
+  try{
+    const r=await fetch(S.settings.webhookUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:normPhone(phone),message,shop:S.settings.shopName})});
+    if(!r.ok) throw new Error();
+    toast('Message sent via webhook ✓');
+  }catch{
+    toast('Webhook failed, using WhatsApp','warning');
+    waMsg(phone,message);
+  }
+}
+
+/* ═════════════════════════════
+   DASHBOARD  — FIX 2, 3, 4
+═════════════════════════════ */
+function renderDashboard(){
+  const todayOrds=S.orders.filter(o=>o.orderDate===today());
+  const todaySales=todayOrds.reduce((s,o)=>s+Number(o.price||0),0);
+  const totSales=S.orders.reduce((s,o)=>s+Number(o.price||0),0);
+  const pending=S.orders.filter(o=>o.status!=='Delivered').length;
+  const ready=S.orders.filter(o=>o.status==='Ready').length;
+
+  // KPI cards — FIX 4: each card is clickable and routes to relevant page
+  const kpi=document.getElementById('kpi-row');
+  if(kpi) kpi.innerHTML=[
+    {ic:'👥',lb:S.lang==='ur'?'کل گاہک':T('customers'),v:S.customers.length,bg:'#4A6741',page:'customers'},
+    {ic:'📋',lb:S.lang==='ur'?'کل آرڈرز':T('orders'),v:S.orders.length,bg:'#2980B9',page:'orders'},
+    {ic:'⏳',lb:S.lang==='ur'?'زیر عمل':'Pending',v:pending,bg:'#E67E22',page:'orders'},
+    {ic:'💰',lb:S.lang==='ur'?'کل سیلز':T('total_sales'),v:fmt(totSales),bg:'#27AE60',page:'billing'},
+  ].map(({ic,lb,v,bg,page})=>`
+    <div class="kpi-card" onclick="showPage('${page}')" title="Go to ${lb}" style="cursor:pointer">
+      <div class="kpi-icon-wrap" style="background:${bg}18;color:${bg}">${ic}</div>
+      <div class="kpi-text">
+        <div class="kpi-val">${v}</div>
+        <div class="kpi-lbl">${lb}</div>
+        <div class="kpi-sub" style="color:${bg};opacity:.7;font-size:9px">→ View ${lb}</div>
+      </div>
+    </div>`).join('');
+
+  // Recent orders table — FIX 4: rows are clickable
+  const body=document.getElementById('dash-orders-body');
+  if(body){
+    const rec=S.orders.slice(0,5);
+    body.innerHTML=rec.length
+      ? rec.map(o=>`<tr class="clickable-row" onclick="viewOrder('${o.id}')" title="View order ${o.id}">
+          <td><strong style="color:var(--primary)">${o.id}</strong></td>
+          <td>${o.custName}</td>
+          <td>${o.garment}</td>
+          <td>${statusBadge(o.status)}</td>
+        </tr>`).join('')
+      : `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">${S.lang==='ur'?'کوئی آرڈر نہیں':'No orders yet'}</td></tr>`;
+  }
+
+  // FIX 3: Today's summary as proper boxed grid, all boxes clickable
+  const tc=document.getElementById('today-cards');
+  if(tc){
+    const boxes=[
+      {lbl:S.lang==='ur'?'آج کے آرڈرز':"Today's Orders", val:todayOrds.length, color:'#2980B9', page:'orders'},
+      {lbl:S.lang==='ur'?'آج کی سیلز':"Today's Sales",  val:fmt(todaySales),   color:'#27AE60', page:'billing'},
+      {lbl:S.lang==='ur'?'تیار آرڈرز':'Ready Orders',   val:ready,             color:'#E67E22', page:'orders'},
+      {lbl:S.lang==='ur'?'کل گاہک':'Total Customers',   val:S.customers.length, color:'#4A6741', page:'customers'},
+    ];
+    tc.innerHTML=`<div class="today-summary-grid">
+      ${boxes.map(b=>`
+        <a class="today-box" onclick="showPage('${b.page}')" href="#" title="Go to ${b.lbl}">
+          <div class="today-box-val" style="color:${b.color}">${b.val}</div>
+          <div class="today-box-lbl">${b.lbl}</div>
+        </a>`).join('')}
+    </div>`;
+  }
+
+  // Deliveries due — FIX 4: rows clickable
+  const due=S.orders.filter(o=>o.status!=='Delivered'&&o.deliveryDate<=daysAgo(-3)).slice(0,5);
+  const dueBody=document.getElementById('dash-due-body');
+  if(dueBody) dueBody.innerHTML=due.length
+    ? due.map(o=>`<tr class="clickable-row" onclick="viewOrder('${o.id}')" title="View order">
+        <td><strong style="color:var(--primary)">${o.id}</strong></td>
+        <td><a href="#" onclick="event.stopPropagation();viewCustomer('${o.custId}')" style="color:var(--primary);font-weight:600">${o.custName}</a></td>
+        <td>${o.garment}</td>
+        <td><span style="color:${o.deliveryDate<today()?'var(--danger)':'var(--warning)'};font-weight:700">${o.deliveryDate}</span></td>
+        <td>${statusBadge(o.status)}</td>
+        <td><button class="btn btn-wa btn-sm" onclick="event.stopPropagation();sendOrderWADirect('${o.id}')">📱</button></td>
+      </tr>`).join('')
+    : `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">No upcoming deliveries</td></tr>`;
+}
+
+/* ═════════════════════════════
+   REPORTS
+═════════════════════════════ */
+function initReportFilters(){
+  const s=document.getElementById('rpt-s');
+  const e=document.getElementById('rpt-e');
+  if(s&&!s.value) s.value=daysAgo(30);
+  if(e&&!e.value) e.value=today();
+  const garments=[...new Set(S.orders.map(o=>o.garment))].sort();
+  const gEl=document.getElementById('rpt-garment');
+  if(gEl){const c=gEl.value;gEl.innerHTML=`<option value="">All Categories</option>`+garments.map(g=>`<option value="${g}" ${g===c?'selected':''}>${g}</option>`).join('');}
+  const cEl=document.getElementById('rpt-cust');
+  if(cEl){const c=cEl.value;cEl.innerHTML=`<option value="">All Customers</option>`+S.customers.map(x=>`<option value="${x.id}" ${x.id===c?'selected':''}>${x.name}</option>`).join('');}
+}
+
+function setQuickRange(v){
+  const s=document.getElementById('rpt-s');
+  const e=document.getElementById('rpt-e');
+  if(!v) return;
+  const now=new Date();
+  e.value=today();
+  if(v==='thisMonth') s.value=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+  else if(v==='lastMonth'){
+    s.value=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().split('T')[0];
+    e.value=new Date(now.getFullYear(),now.getMonth(),0).toISOString().split('T')[0];
+  } else s.value=daysAgo(Number(v));
+  renderReports();
+}
+
+function renderReports(){
+  initReportFilters();
+  const start=document.getElementById('rpt-s')?.value||'';
+  const end=document.getElementById('rpt-e')?.value||'';
+  const gf=document.getElementById('rpt-garment')?.value||'';
+  const sf=document.getElementById('rpt-status')?.value||'';
+  const cf=document.getElementById('rpt-cust')?.value||'';
+  let filtered=S.orders.filter(o=>{
+    if(start&&o.orderDate<start) return false;
+    if(end&&o.orderDate>end) return false;
+    if(gf&&o.garment!==gf) return false;
+    if(sf&&o.status!==sf) return false;
+    if(cf&&o.custId!==cf) return false;
+    return true;
+  });
+  const totS=filtered.reduce((s,o)=>s+Number(o.price||0),0);
+  const totP=filtered.reduce((s,o)=>s+totalPaid(o),0);
+  const avg=filtered.length?Math.round(totS/filtered.length):0;
+  const bal=totS-totP;
+  const kEl=document.getElementById('rpt-kpis');
+  if(kEl) kEl.innerHTML=[
+    [T('total_sales'),fmt(totS),'#4A6741'],
+    [T('total_orders'),filtered.length,'#2980B9'],
+    [T('avg_order'),fmt(avg),'#E67E22'],
+    [T('balance_due'),fmt(bal),'#C0392B'],
+  ].map(([l,v,c])=>`<div class="kpi-card"><div class="kpi-icon-wrap" style="background:${c}15;font-size:20px">📊</div><div class="kpi-text"><div class="kpi-val" style="color:${c}">${v}</div><div class="kpi-lbl">${l}</div></div></div>`).join('');
+  const rcEl=document.getElementById('rpt-count');
+  if(rcEl) rcEl.textContent=`${filtered.length} ${S.lang==='ur'?'آرڈرز':'orders'}`;
+  const dateMap={};
+  filtered.forEach(o=>{dateMap[o.orderDate]=(dateMap[o.orderDate]||0)+Number(o.price||0);});
+  renderChart('chart-date',Object.entries(dateMap).sort((a,b)=>a[0]<b[0]?-1:1).map(([d,v])=>({label:d.slice(5),value:v})),'#4A6741');
+  const catMap={};
+  filtered.forEach(o=>{catMap[o.garment]=(catMap[o.garment]||0)+Number(o.price||0);});
+  const cats=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  renderChart('chart-cat',cats.map(([l,v])=>({label:l,value:v})),['#4A6741','#c8a96e','#27AE60','#2980B9','#E67E22','#C0392B']);
+  const bodyEl=document.getElementById('rpt-body');
+  if(!bodyEl) return;
+  if(!filtered.length){bodyEl.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">No orders found</td></tr>`;return;}
+  bodyEl.innerHTML=filtered.map(o=>{
+    const b=Number(o.price||0)-totalPaid(o);
+    return `<tr class="clickable-row" onclick="viewOrder('${o.id}')">
+      <td><strong style="color:var(--primary)">${o.id}</strong></td>
+      <td>${o.custName}</td><td>${o.garment}</td>
+      <td>${o.orderDate}</td><td>${statusBadge(o.status)}</td><td>${fmt(o.price)}</td>
+      <td style="color:${b<=0?'var(--success)':'var(--danger)'}">${fmt(b)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderChart(id,data,color){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(!data.length){el.innerHTML=`<div style="color:var(--text-muted);font-size:12px;padding:20px">${S.lang==='ur'?'ڈیٹا نہیں':'No data'}</div>`;return;}
+  const max=Math.max(...data.map(d=>d.value),1);
+  const getC=(i)=>Array.isArray(color)?color[i%color.length]:color;
+  el.innerHTML=data.map((d,i)=>`<div class="chart-col">
+    <div class="chart-val">${d.value>=1000?Math.round(d.value/1000)+'k':d.value}</div>
+    <div class="chart-bar" style="height:${Math.max(6,Math.round((d.value/max)*120))}px;background:${getC(i)}"></div>
+    <div class="chart-lbl" title="${d.label}">${d.label}</div>
+  </div>`).join('');
+}
+
+/* ═════════════════════════════
+   NOTIFICATIONS
+═════════════════════════════ */
+function addNotif(msg,cat='System'){
+  S.notifications.unshift({id:randId('N'),msg,cat,time:new Date().toLocaleTimeString(),read:false});
+  const ind=document.getElementById('notif-indicator');
+  if(ind) ind.style.display=S.notifications.some(n=>!n.read)?'block':'none';
+}
+
+function renderNotifications(){
+  const list=document.getElementById('notif-list');
+  if(!list) return;
+  if(!S.notifications.length){list.innerHTML=`<div class="empty"><span class="empty-icon">🔔</span><p>No notifications</p></div>`;return;}
+  list.innerHTML=S.notifications.map(n=>`<div class="notif-item">
+    <div class="notif-dot2 ${n.read?'read':''}"></div>
+    <div style="flex:1">
+      <div style="font-size:13px">${n.msg}</div>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${n.cat} • ${n.time}</div>
+    </div>
+  </div>`).join('');
+  S.notifications.forEach(n=>n.read=true);
+  const ind=document.getElementById('notif-indicator');
+  if(ind) ind.style.display='none';
+}
+
+function clearNotifs(){S.notifications=[];renderNotifications();}
+
+/* ═════════════════════════════
+   SETTINGS
+═════════════════════════════ */
+function showStab(tab){
+  document.querySelectorAll('.stab').forEach(t=>{
+    t.classList.toggle('active',t.getAttribute('onclick')?.includes(`'${tab}'`));
+  });
+  renderSettings(tab);
+}
+
+function renderSettings(tab='shop'){
+  const el=document.getElementById('stab-content');
+  if(!el) return;
+  if(tab==='shop'){
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">🏪 ${T('shop_info')}</div></div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="form-group"><label>${T('shop_name')}</label><input class="form-control" type="text" id="s-sname" value="${S.settings.shopName}"/></div>
+        <div class="form-group"><label>${T('shop_phone')}</label><input class="form-control" type="text" id="s-sphone" value="${S.settings.shopPhone}"/></div>
+      </div>
+      <div class="form-group"><label>${T('shop_addr')}</label><input class="form-control" type="text" id="s-saddr" value="${S.settings.shopAddr}"/></div>
+      <div class="form-group"><label>${T('wa_greeting')}</label><textarea class="form-control" id="s-greet">${S.settings.waGreeting}</textarea></div>
+      <div class="flex-end"><button class="btn btn-primary" onclick="saveShopSettings()">${T('save')}</button></div>
+    </div></div>`;
+  } else if(tab==='profile'){
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">👤 ${T('my_profile')}</div></div>
+    <div class="card-body">
+      <div style="text-align:center;margin-bottom:20px">
+        <div class="pic-upload" onclick="document.getElementById('profile-pic-input').click()" style="max-width:200px;margin:0 auto">
+          <input type="file" id="profile-pic-input" accept="image/*" onchange="updateProfilePic(this)"/>
+          <div id="profile-av" class="avatar av-xl" style="background:var(--primary)">${initials(S.user?.name||'A')}</div>
+          <p style="font-size:11px">${T('tap_to_upload')}</p>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="form-group"><label>Name</label><input class="form-control" type="text" id="p-name" value="${S.user?.name||''}"/></div>
+        <div class="form-group"><label>Phone</label><input class="form-control" type="text" id="p-phone" value="${S.user?.phone||''}"/></div>
+      </div>
+      <div class="form-group"><label>Role</label><input class="form-control" type="text" id="p-role" value="${S.user?.role||'Owner'}"/></div>
+      <div class="flex-end"><button class="btn btn-primary" onclick="saveProfile()">${T('save')}</button></div>
+    </div></div>`;
+  } else if(tab==='messaging'){
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">📱 ${T('messaging')}</div></div>
+    <div class="card-body">
+      <div class="form-group"><label>${T('shop_phone')}</label><input class="form-control" type="text" id="s-wphone" value="${S.settings.shopPhone}"/></div>
+      <div class="form-group"><label>${T('webhook_url')}</label>
+        <input class="form-control" type="text" id="s-webhook" value="${S.settings.webhookUrl}" placeholder="https://api.your-sms-service.com/send"/>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Webhook receives POST: {phone, message, shop}</div>
+      </div>
+      <div class="flex-row flex-end">
+        <button class="btn btn-wa" onclick="waMsg('${S.settings.shopPhone}','StitchHub Test ✓')">${T('test_wa')}</button>
+        <button class="btn btn-primary" onclick="saveMsgSettings()">${T('save')}</button>
+      </div>
+    </div></div>`;
+  } else if(tab==='fields'){
+    const gf=S.globalCF||[];
+    const stored=JSON.parse(localStorage.getItem('sh_cf')||'{}');
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">📋 ${T('custom_fields')}</div></div>
+    <div class="card-body">
+      <div class="g3 mb-3">
+        <div class="form-group" style="margin-bottom:0"><label>${T('field_name')}</label><input class="form-control" type="text" id="gcf-n" placeholder="Armhole, Daman..."/></div>
+        <div class="form-group" style="margin-bottom:0"><label>${T('unit')}</label><input class="form-control" type="text" id="gcf-u" value="inches"/></div>
+        <div class="form-group" style="margin-bottom:0"><label>${T('scope')}</label>
+          <select class="form-control" id="gcf-g"><option value="_global">${T('all_garments')}</option>${Object.keys(STD_M).map(g=>`<option value="${g}">${g}</option>`).join('')}</select>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm mb-4" onclick="addGCF()">+ ${T('add_field')}</button>
+      <div><strong style="font-size:13px">Global Fields:</strong>
+        <div class="chip-wrap mt-2">${gf.map(f=>`<span class="chip">${f.name} (${f.unit})<button class="chip-x" onclick="removeGCF('${f.slug}')">×</button></span>`).join('')||`<span style="font-size:12px;color:var(--text-muted)">None</span>`}</div>
+      </div>
+      ${Object.entries(stored).map(([g,fs])=>`<div class="mt-3"><strong style="font-size:13px">${g}:</strong>
+        <div class="chip-wrap mt-2">${fs.map(f=>`<span class="chip">${f.name} (${f.unit})<button class="chip-x" onclick="removeGF('${g}','${f.slug}')">×</button></span>`).join('')}</div>
+      </div>`).join('')}
+    </div></div>`;
+  } else if(tab==='appear'){
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">🎨 ${T('appearance')}</div></div>
+    <div class="card-body">
+      <div class="form-group"><label>${T('language')}</label>
+        <select class="form-control" id="s-lang" onchange="applyLang(this.value)">
+          <option value="en" ${S.lang==='en'?'selected':''}>🇬🇧 English</option>
+          <option value="ur" ${S.lang==='ur'?'selected':''}>🇵🇰 اردو</option>
+        </select>
+      </div>
+      <div class="form-group"><label>${T('theme')}</label>
+        <input type="color" class="form-control" id="s-color" value="${S.settings.accentColor||'#4A6741'}" oninput="applyTheme(this.value)" style="height:44px;cursor:pointer"/>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted)">Pick a custom brand color for StitchHub</div>
+    </div></div>`;
+  } else if(tab==='staff'){
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">👷 ${T('staff_mgmt')}</div>
+      <button class="btn btn-sm btn-primary" onclick="addStaffPrompt()">+ ${T('add_staff')}</button>
+    </div>
+    <div class="card-body">
+      ${S.staff.length?`<div class="table-wrap"><table>
+        <thead><tr><th>${T('staff_name')}</th><th>${T('staff_role')}</th><th>${T('staff_phone')}</th><th>Actions</th></tr></thead>
+        <tbody>${S.staff.map(s=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-sm" style="background:${avColor(s.name)}">${initials(s.name)}</div>${s.name}</div></td><td><span class="tag">${s.role}</span></td><td>${s.phone}</td><td><button class="btn btn-sm btn-wa" onclick="waMsg('${s.phone}','Hello ${s.name}! Message from ${S.settings.shopName}')">📱</button></td></tr>`).join('')}</tbody>
+      </table></div>`:`<div class="empty" style="padding:32px"><span class="empty-icon" style="font-size:40px">👷</span><p>No staff added yet</p></div>`}
+    </div></div>`;
+  }
+}
+
+function addStaffPrompt(){
+  const name=prompt('Staff Name:');
+  if(!name) return;
+  const role=prompt('Role (Tailor, Cutter, Helper):','Tailor');
+  const phone=prompt('Phone:','');
+  S.staff.push({id:randId('ST'),name,role:role||'Tailor',phone:phone||''});
+  renderSettings('staff');
+  toast('Staff member added ✓');
+}
+
+function saveShopSettings(){
+  S.settings.shopName=document.getElementById('s-sname')?.value||S.settings.shopName;
+  S.settings.shopPhone=document.getElementById('s-sphone')?.value||S.settings.shopPhone;
+  S.settings.shopAddr=document.getElementById('s-saddr')?.value||S.settings.shopAddr;
+  S.settings.waGreeting=document.getElementById('s-greet')?.value||S.settings.waGreeting;
+  document.getElementById('sb-shopname').textContent=S.settings.shopName;
+  toast(S.lang==='ur'?'سیٹنگ محفوظ':'Settings saved ✓');
+}
+
+function saveMsgSettings(){
+  S.settings.shopPhone=document.getElementById('s-wphone')?.value||S.settings.shopPhone;
+  S.settings.webhookUrl=document.getElementById('s-webhook')?.value||'';
+  toast('Messaging settings saved ✓');
+}
+
+function saveProfile(){
+  if(S.user){
+    S.user.name=document.getElementById('p-name')?.value||S.user.name;
+    S.user.phone=document.getElementById('p-phone')?.value||S.user.phone;
+    S.user.role=document.getElementById('p-role')?.value||S.user.role;
+    document.getElementById('sb-uname').textContent=S.user.name;
+    document.getElementById('sb-initials').textContent=initials(S.user.name);
+    document.getElementById('sb-role').textContent=S.user.role;
+  }
+  toast('Profile updated ✓');
+}
+
+function updateProfilePic(input){
+  if(!input.files||!input.files[0]) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const av=document.getElementById('sb-avatar-wrap');
+    if(av) av.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+    const pav=document.getElementById('profile-av');
+    if(pav) pav.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0"/>`;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+function addGCF(){
+  const n=document.getElementById('gcf-n').value.trim();
+  const u=document.getElementById('gcf-u').value.trim()||'inches';
+  const g=document.getElementById('gcf-g').value;
+  if(!n){toast('Field name required','error');return;}
+  const s=slug(n);
+  if(g==='_global'){
+    if(!(S.globalCF||[]).find(f=>f.slug===s)){(S.globalCF=S.globalCF||[]).push({name:n,slug:s,unit:u});}
+  } else {
+    const stored=JSON.parse(localStorage.getItem('sh_cf')||'{}');
+    stored[g]=stored[g]||[];
+    if(!stored[g].find(f=>f.slug===s)){stored[g].push({name:n,slug:s,unit:u});localStorage.setItem('sh_cf',JSON.stringify(stored));}
+  }
+  renderSettings('fields');toast('Field added ✓');
+}
+function removeGCF(s){S.globalCF=(S.globalCF||[]).filter(f=>f.slug!==s);renderSettings('fields');}
+function removeGF(g,s){const stored=JSON.parse(localStorage.getItem('sh_cf')||'{}');if(stored[g])stored[g]=stored[g].filter(f=>f.slug!==s);localStorage.setItem('sh_cf',JSON.stringify(stored));renderSettings('fields');}
+function applyTheme(c){document.documentElement.style.setProperty('--primary',c);S.settings.accentColor=c;}
+
+/* ═════════════════════════════
+   SEED DATA
+═════════════════════════════ */
+function seedData(){
+  S.customers=[
+    {id:'C001',name:'Muhammad Ali',phone:'03001234567',addr:'Model Town, Lahore',style:'Traditional',ref:'Walk-in',notes:'Prefers plain designs',pic:null,createdAt:'2025-01-10'},
+    {id:'C002',name:'Ahmad Hassan',phone:'03111234567',addr:'Gulberg III, Lahore',style:'Formal',ref:'Referral',notes:'',pic:null,createdAt:'2025-01-15'},
+    {id:'C003',name:'Fatima Begum',phone:'03221234567',addr:'DHA Phase 5, Lahore',style:'Ladies',ref:'Online',notes:'Embroidery expert',pic:null,createdAt:'2025-02-01'},
+    {id:'C004',name:'Tariq Mahmood',phone:'03331234567',addr:'Johar Town, Lahore',style:'Casual',ref:'Walk-in',notes:'',pic:null,createdAt:'2025-02-10'},
+    {id:'C005',name:'Sara Khan',phone:'03441234567',addr:'Clifton, Karachi',style:'Ladies',ref:'Friend',notes:'',pic:null,createdAt:'2025-03-01'},
+  ];
+  S.orders=[
+    {id:'ORD001',custId:'C001',custName:'Muhammad Ali',custPhone:'03001234567',garment:'Shalwar Kameez',fabric:'Lawn',color:'White',price:3500,advance:1500,priority:'normal',deliveryDate:'2026-02-20',status:'Delivered',notes:'Plain collar',orderDate:'2026-01-10'},
+    {id:'ORD002',custId:'C002',custName:'Ahmad Hassan',custPhone:'03111234567',garment:'Coat',fabric:'Wool',color:'Navy Blue',price:8000,advance:4000,priority:'vip',deliveryDate:'2026-02-25',status:'Ready',notes:'3 buttons',orderDate:'2026-01-15'},
+    {id:'ORD003',custId:'C003',custName:'Fatima Begum',custPhone:'03221234567',garment:'Ladies Dress',fabric:'Chiffon',color:'Pink',price:5500,advance:2000,priority:'normal',deliveryDate:'2026-03-10',status:'Stitching',notes:'Embroidered neck',orderDate:'2026-01-20'},
+    {id:'ORD004',custId:'C004',custName:'Tariq Mahmood',custPhone:'03331234567',garment:'Shalwar Kameez',fabric:'Cotton',color:'Blue',price:2800,advance:1000,priority:'normal',deliveryDate:'2026-03-05',status:'Cutting',notes:'',orderDate:'2026-01-25'},
+    {id:'ORD005',custId:'C001',custName:'Muhammad Ali',custPhone:'03001234567',garment:'Sherwani',fabric:'Brocade',color:'Gold',price:15000,advance:8000,priority:'urgent',deliveryDate:'2026-03-15',status:'Stitching',notes:'Wedding sherwani',orderDate:'2026-02-01'},
+    {id:'ORD006',custId:'C005',custName:'Sara Khan',custPhone:'03441234567',garment:'Ladies Dress',fabric:'Silk',color:'Red',price:6500,advance:3000,priority:'normal',deliveryDate:'2026-03-10',status:'Received',notes:'Party wear',orderDate:'2026-02-05'},
+  ];
+  S.measurements=[
+    {id:'M001',custId:'C001',custName:'Muhammad Ali',garment:'Shalwar Kameez',unit:'inches',fields:{Length:42,Shoulder:17,Chest:40,Loosing:4,Neck:15.5,Armhole:14,Sleeve:24,'Cuff Length':8,'Cuff Width':4,'Sleeve Opening':10,'Pant Length':40,'Pant Waist':36,'Pant Bottom':14},notes:'',date:'2026-01-10'},
+    {id:'M002',custId:'C002',custName:'Ahmad Hassan',garment:'Coat',unit:'inches',fields:{Length:30,Chest:42,Shoulder:18,Sleeve:25,Waist:38,'Back Width':16},notes:'Slim fit',date:'2026-01-15'},
+    {id:'M003',custId:'C003',custName:'Fatima Begum',garment:'Ladies Dress',unit:'inches',fields:{Length:48,Bust:36,Waist:30,Hip:38,Shoulder:15,Sleeve:22,Neck:14,'Front Daman':28,'Back Daman':26},notes:'',date:'2026-01-20'},
+  ];
+  S.payments=[
+    {id:'P001',orderId:'ORD001',amount:2000,date:'2026-01-20'},
+    {id:'P002',orderId:'ORD002',amount:2000,date:'2026-02-01'},
+  ];
+}
+</script>
+</body>
+</html>
