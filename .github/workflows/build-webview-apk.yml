@@ -31,39 +31,149 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Install Capacitor
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install SDK
+        run: sdkmanager "platforms;android-33" "build-tools;33.0.2"
+
+      - name: Build project structure
         run: |
-          npm install -g @capacitor/cli
-          npm install @capacitor/core @capacitor/android
+          mkdir -p myapp/app/src/main/java/com/example/webapp
+          mkdir -p myapp/app/src/main/assets/www
+          mkdir -p myapp/app/src/main/res/values
+          mkdir -p myapp/gradle/wrapper
 
-      - name: Init Capacitor
+      - name: Copy HTML
+        run: cp -r www/. myapp/app/src/main/assets/www/
+
+      - name: Create MainActivity.java
         run: |
-          npx cap init "${{ inputs.app_name }}" "${{ inputs.pkg_name }}" --web-dir www
+          cat > myapp/app/src/main/java/com/example/webapp/MainActivity.java << 'JAVAEOF'
+          package com.example.webapp;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          public class MainActivity extends Activity {
+            @Override
+            protected void onCreate(Bundle savedInstanceState) {
+              super.onCreate(savedInstanceState);
+              WebView w = new WebView(this);
+              setContentView(w);
+              WebSettings s = w.getSettings();
+              s.setJavaScriptEnabled(true);
+              s.setDomStorageEnabled(true);
+              w.setWebViewClient(new WebViewClient());
+              w.loadUrl("file:///android_asset/www/index.html");
+            }
+          }
+          JAVAEOF
 
-      - name: Add Android
-        run: npx cap add android
-
-      - name: Copy web assets
-        run: npx cap copy android
-
-      - name: Fix Gradle cache issue
+      - name: Create AndroidManifest.xml
         run: |
-          rm -rf ~/.gradle/caches/
-          cd android
-          sed -i 's/classpath("com.android.tools.build:gradle:[^"]*")/classpath("com.android.tools.build:gradle:8.1.4")/' build.gradle.kts 2>/dev/null || true
+          cat > myapp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+            package="com.example.webapp">
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <application
+              android:label="WebApp"
+              android:allowBackup="true"
+              android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+              <activity android:name=".MainActivity" android:exported="true">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN"/>
+                  <category android:name="android.intent.category.LAUNCHER"/>
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          XMLEOF
+
+      - name: Create strings.xml
+        run: |
+          cat > myapp/app/src/main/res/values/strings.xml << 'STREOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+            <string name="app_name">WebApp</string>
+          </resources>
+          STREOF
+
+      - name: Create app/build.gradle
+        run: |
+          cat > myapp/app/build.gradle << 'GRADEOF'
+          plugins {
+            id 'com.android.application'
+          }
+          android {
+            compileSdk 33
+            defaultConfig {
+              applicationId "com.example.webapp"
+              minSdk 21
+              targetSdk 33
+              versionCode 1
+              versionName "1.0"
+            }
+            buildTypes {
+              debug {}
+            }
+          }
+          dependencies {}
+          GRADEOF
+
+      - name: Create root build.gradle
+        run: |
+          cat > myapp/build.gradle << 'ROOTEOF'
+          plugins {
+            id 'com.android.application' version '8.1.0' apply false
+          }
+          ROOTEOF
+
+      - name: Create settings.gradle
+        run: |
+          cat > myapp/settings.gradle << 'SETEOF'
+          pluginManagement {
+            repositories {
+              google()
+              mavenCentral()
+              gradlePluginPortal()
+            }
+          }
+          dependencyResolutionManagement {
+            repositories {
+              google()
+              mavenCentral()
+            }
+          }
+          rootProject.name = "myapp"
+          include ':app'
+          SETEOF
+
+      - name: Create gradle wrapper
+        run: |
+          cat > myapp/gradle/wrapper/gradle-wrapper.properties << 'WRAPEOF'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.1-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          WRAPEOF
+          cd myapp
+          gradle wrapper --gradle-version 8.1
 
       - name: Build APK
         run: |
-          cd android
+          cd myapp
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --no-build-cache
+          ./gradlew assembleDebug --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.app_name }}-WebView-APK
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: ${{ inputs.app_name }}-APK
+          path: myapp/app/build/outputs/apk/debug/*.apk
           retention-days: 30
