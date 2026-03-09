@@ -34,25 +34,42 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Accept licenses
-        run: yes | sdkmanager --licenses || true
-
-      - name: Install SDK
-        run: sdkmanager "platforms;android-33" "build-tools;33.0.2"
-
-      - name: Build project structure
+      - name: Install SDK components
         run: |
-          mkdir -p myapp/app/src/main/java/com/example/webapp
-          mkdir -p myapp/app/src/main/assets/www
-          mkdir -p myapp/app/src/main/res/values
-          mkdir -p myapp/gradle/wrapper
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-33" "build-tools;33.0.2"
 
-      - name: Copy HTML
-        run: cp -r www/. myapp/app/src/main/assets/www/
+      - name: Create project structure
+        run: |
+          mkdir -p app/src/main/java/com/example/webapp
+          mkdir -p app/src/main/assets/www
+          mkdir -p app/src/main/res/values
+          mkdir -p gradle/wrapper
+
+      - name: Copy HTML files
+        run: cp -r www/. app/src/main/assets/www/
+
+      - name: Download Gradle wrapper
+        run: |
+          curl -L -o gradle/wrapper/gradle-wrapper.jar \
+            https://github.com/gradle/gradle/raw/v8.1.0/gradle/wrapper/gradle-wrapper.jar
+
+          curl -L -o gradlew \
+            https://raw.githubusercontent.com/gradle/gradle/v8.1.0/gradlew
+
+          chmod +x gradlew
+
+          cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.1-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
 
       - name: Create MainActivity.java
         run: |
-          cat > myapp/app/src/main/java/com/example/webapp/MainActivity.java << 'JAVAEOF'
+          cat > app/src/main/java/com/example/webapp/MainActivity.java << 'EOF'
           package com.example.webapp;
           import android.app.Activity;
           import android.os.Bundle;
@@ -72,11 +89,11 @@ jobs:
               w.loadUrl("file:///android_asset/www/index.html");
             }
           }
-          JAVAEOF
+          EOF
 
       - name: Create AndroidManifest.xml
         run: |
-          cat > myapp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+          cat > app/src/main/AndroidManifest.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android"
             package="com.example.webapp">
@@ -93,20 +110,20 @@ jobs:
               </activity>
             </application>
           </manifest>
-          XMLEOF
+          EOF
 
       - name: Create strings.xml
         run: |
-          cat > myapp/app/src/main/res/values/strings.xml << 'STREOF'
+          cat > app/src/main/res/values/strings.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
             <string name="app_name">WebApp</string>
           </resources>
-          STREOF
+          EOF
 
       - name: Create app/build.gradle
         run: |
-          cat > myapp/app/build.gradle << 'GRADEOF'
+          cat > app/build.gradle << 'EOF'
           plugins {
             id 'com.android.application'
           }
@@ -124,19 +141,19 @@ jobs:
             }
           }
           dependencies {}
-          GRADEOF
+          EOF
 
       - name: Create root build.gradle
         run: |
-          cat > myapp/build.gradle << 'ROOTEOF'
+          cat > build.gradle << 'EOF'
           plugins {
             id 'com.android.application' version '8.1.0' apply false
           }
-          ROOTEOF
+          EOF
 
       - name: Create settings.gradle
         run: |
-          cat > myapp/settings.gradle << 'SETEOF'
+          cat > settings.gradle << 'EOF'
           pluginManagement {
             repositories {
               google()
@@ -152,28 +169,13 @@ jobs:
           }
           rootProject.name = "myapp"
           include ':app'
-          SETEOF
-
-      - name: Create gradle wrapper
-        run: |
-          cat > myapp/gradle/wrapper/gradle-wrapper.properties << 'WRAPEOF'
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.1-bin.zip
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          WRAPEOF
-          cd myapp
-          gradle wrapper --gradle-version 8.1
+          EOF
 
       - name: Build APK
-        run: |
-          cd myapp
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.app_name }}-APK
-          path: myapp/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 30
